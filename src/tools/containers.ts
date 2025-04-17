@@ -47,7 +47,7 @@ export function registerContainersTool(server: McpServer): void {
         const container = await client.createContainer({
           name,
           type,
-          zone,
+          zone: { type: zone },
           code,
         });
         return {

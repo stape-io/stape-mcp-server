@@ -19,13 +19,13 @@ export interface Container {
   status: string;
   createdAt: string;
   updatedAt: string;
-  zone: string;
+  zone: { type: string };
 }
 
 export interface CreateContainerParams {
   name: string;
   type: string;
-  zone: string;
+  zone: { type: string };
   code?: string;
 }
 
