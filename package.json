@@ -20,7 +20,8 @@
     "build": "tsc && chmod 755 dist/index.js",
     "postinstall": "npm run build",
     "lint": "eslint --ext .ts src",
-    "lint:fix": "eslint --ext .ts src --fix"
+    "lint:fix": "eslint --ext .ts src --fix",
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
