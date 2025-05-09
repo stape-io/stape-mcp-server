@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { getPackageVersion, loadEnv, log } from "./utils";
 import { tools } from "./tools";
+import { getPackageVersion, loadEnv, log } from "./utils";
 
 // Load environment variables first
 loadEnv();

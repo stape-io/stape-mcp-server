@@ -1,0 +1,39 @@
+export interface ContainerSubscriptionModel {
+  period: {
+    type: string;
+    label: string;
+  };
+  trial: boolean;
+  usageCount: number;
+  previousUsageCount: number;
+  billingPeriodEnd: string;
+  billingPeriodStart: string;
+  currency: string;
+  currentBillingPeriodUsage: unknown[];
+  hideLimitExceeded: boolean;
+  id: number;
+  isOverdueNextPayment: boolean;
+  isTransferred: boolean;
+  limitExceeded: boolean;
+  nextPaymentDate: string;
+  paidStatus: string;
+  paymentDate: string;
+  paymentStatus: string;
+  isPlanSelected: boolean;
+  previousBillingPeriodEnd: string;
+  previousBillingPeriodStart: string;
+  previousBillingPeriodUsage: unknown[];
+  price: number;
+  promoCode: string;
+  provider: string;
+  referralCommission: number;
+  referralCommissionPercent: number;
+  referralCommissionStatus: string;
+  showPaymentStatusNotification: boolean;
+  subscriptionReference: string;
+  upgradedAt: string;
+  usageExceededAt: string;
+  usageState: string;
+  autoUpgrade: boolean;
+  canBeActivated: boolean;
+}
