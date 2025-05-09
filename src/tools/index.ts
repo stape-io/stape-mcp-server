@@ -1,16 +1,19 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { registerContainerZonesTool } from "./container-zones";
-import { registerContainersTool } from "./containers";
+import { accountTools } from "./account";
+import { containerDomainsTools } from "./container-domains";
+import { containerProxyFilesTools } from "./container-proxy-files";
+import { containerSchedulesTools } from "./container-schedules";
+import { containersTools } from "./containers";
+import { containersAnalyticsTools } from "./containers-analytics";
+import { containersResourcesTools } from "./containers-resources";
+import { resourceTools } from "./resource";
 
-// Define a type for tool registration functions
-export type ToolRegistrationFunction = (server: McpServer) => void;
-
-// Export array of tool registration functions
-export const tools: ToolRegistrationFunction[] = [
-  registerContainerZonesTool,
-  registerContainersTool,
+export const tools = [
+  ...containersTools,
+  ...containerProxyFilesTools,
+  ...containerDomainsTools,
+  ...containerSchedulesTools,
+  ...containersAnalyticsTools,
+  ...containersResourcesTools,
+  ...resourceTools,
+  ...accountTools,
 ];
-
-// Re-export any types that consumers of this module might need
-export * from "./container-zones";
-export * from "./containers";
