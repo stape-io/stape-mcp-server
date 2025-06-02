@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerMonitoringComparisonTypeOptionModel } from "../../models/ContainerMonitoringComparisonTypeOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerMonitoringComparisonType = (server: McpServer): void =>
+export const getContainerMonitoringComparisonType = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_container_monitoring_comparison_type",
+    "stape_resource_get_container_monitoring_comparison_type",
     "Gets container monitoring comparison type as options.",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: resource_get_container_monitoring_comparison_type");
+      log("Running tool: stape_resource_get_container_monitoring_comparison_type");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<
           ContainerMonitoringComparisonTypeOptionModel[]
         >("/resources/container-monitoring-comparison-type");
@@ -28,3 +33,4 @@ export const getContainerMonitoringComparisonType = (server: McpServer): void =>
       }
     },
   );
+};

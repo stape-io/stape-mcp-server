@@ -1,13 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerPlanOptionModel } from "../../models/ContainerPlanOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const containerSubscriptionPlansForUser = (server: McpServer): void =>
+export const containerSubscriptionPlansForUser = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_container_subscription_plans_for_user",
+    "stape_resource_container_subscription_plans_for_user",
     "Gets list of container subscription plans for the user",
     {
       userWorkspaceIdentifier: z
@@ -17,10 +21,11 @@ export const containerSubscriptionPlansForUser = (server: McpServer): void =>
     },
     async ({ userWorkspaceIdentifier }): Promise<CallToolResult> => {
       log(
-        `Running tool: resource_container_subscription_plans_for_user for account ${userWorkspaceIdentifier}`,
+        `Running tool: stape_resource_container_subscription_plans_for_user for account ${userWorkspaceIdentifier}`,
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerPlanOptionModel>(
           "/resources/container-subscription-plans-for-user",
           {
@@ -41,3 +46,4 @@ export const containerSubscriptionPlansForUser = (server: McpServer): void =>
       }
     },
   );
+};

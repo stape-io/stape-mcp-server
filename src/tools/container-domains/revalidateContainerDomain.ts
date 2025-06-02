@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const revalidateContainerDomain = (server: McpServer): void =>
+export const revalidateContainerDomain = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_domains_revalidate",
+    "stape_container_domains_revalidate",
     "Revalidate a domain for a container. Triggers a revalidation process for the specified domain in the container.",
     {
       container: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const revalidateContainerDomain = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         await httpClient.post(
           `/containers/${encodeURIComponent(container)}/domains/${encodeURIComponent(domain)}/revalidate`,
           undefined,
@@ -40,3 +45,4 @@ export const revalidateContainerDomain = (server: McpServer): void =>
       }
     },
   );
+};

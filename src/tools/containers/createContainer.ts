@@ -1,15 +1,19 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerModel } from "../../models/ContainerModel";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerCodeSettingsFormTypeSchema } from "../../schemas/ContainerCodeSettingsFormTypeSchema";
 import { ContainerCookieKeeperFormType2Schema } from "../../schemas/ContainerCookieKeeperFormType2Schema";
 import { OptionFormSchema } from "../../schemas/OptionFormSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const createContainer = (server: McpServer): void =>
+export const createContainer = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_create_container",
+    "stape_containers_create_container",
     "Creates a new container and returns the full container model.",
     {
       userWorkspaceIdentifier: z
@@ -59,9 +63,10 @@ export const createContainer = (server: McpServer): void =>
         .describe("Service account credentials."),
     },
     async ({ userWorkspaceIdentifier, ...body }) => {
-      log("Running tool: containers_create_container");
+      log("Running tool: stape_containers_create_container");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.post<ContainerModel>(
           "/containers",
           JSON.stringify(body),
@@ -83,3 +88,4 @@ export const createContainer = (server: McpServer): void =>
       }
     },
   );
+};

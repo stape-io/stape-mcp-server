@@ -1,17 +1,22 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { StapeGatewayPlanOptionModel } from "../../models/StapeGatewayPlanOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getStapeGatewaySubscriptionPlans = (server: McpServer): void =>
+export const getStapeGatewaySubscriptionPlans = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_stape_gateway_subscription_plans",
+    "stape_resource_get_stape_gateway_subscription_plans",
     "Gets stape gateway subscription plans as options.",
     {},
     async () => {
-      log("Running tool: resource_get_stape_gateway_subscription_plans");
+      log("Running tool: stape_resource_get_stape_gateway_subscription_plans");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<StapeGatewayPlanOptionModel[]>(
           "/resources/stape-gateway-subscription-plans",
         );
@@ -27,3 +32,4 @@ export const getStapeGatewaySubscriptionPlans = (server: McpServer): void =>
       }
     },
   );
+};

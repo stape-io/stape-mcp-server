@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { OptionModel } from "../../models/OptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerDomainCdnTypes = (server: McpServer): void =>
+export const getContainerDomainCdnTypes = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_container_domain_cdn_types",
+    "stape_resource_get_container_domain_cdn_types",
     "Gets container domain CDN types as options.",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: resource_get_container_domain_cdn_types");
+      log("Running tool: stape_resource_get_container_domain_cdn_types");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<OptionModel[]>(
           "/resources/container-domain-cdn-types",
         );
@@ -28,3 +33,4 @@ export const getContainerDomainCdnTypes = (server: McpServer): void =>
       }
     },
   );
+};

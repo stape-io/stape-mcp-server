@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateUserIdPowerUp = (server: McpServer): void =>
+export const updateUserIdPowerUp = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_user_id_power_up",
+    "stape_containers_update_user_id_power_up",
     "Enables or disables the user-id power-up for a container. This endpoint allows you to control whether user ID features are active for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -16,9 +20,10 @@ export const updateUserIdPowerUp = (server: McpServer): void =>
       isActive: z.boolean().describe("Whether the user-id power-up is active."),
     },
     async ({ identifier, userWorkspaceIdentifier, isActive }) => {
-      log("Running tool: containers_update_user_id_power_up");
+      log("Running tool: stape_containers_update_user_id_power_up");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch(
           `/containers/${identifier}/power-ups/user-id`,
           JSON.stringify({ isActive }),
@@ -40,3 +45,4 @@ export const updateUserIdPowerUp = (server: McpServer): void =>
       }
     },
   );
+};

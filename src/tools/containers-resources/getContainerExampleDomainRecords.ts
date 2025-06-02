@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { CustomDomainDnsRecordModel } from "../../models/CustomDomainDnsRecordModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerExampleDomainRecords = (server: McpServer): void =>
+export const getContainerExampleDomainRecords = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_example_domain_records",
+    "stape_containers_resources_get_example_domain_records",
     "Retrieves example DNS records for a container's custom domains. Use this endpoint to get the recommended DNS record types, hosts, domains, and values for configuring custom domains for the specified container. Accepts domain, cdnType ('none', 'custom', 'stape'), and useCnameRecord ('true', 'false') as query parameters.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -35,6 +39,7 @@ export const getContainerExampleDomainRecords = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<CustomDomainDnsRecordModel[]>(
           `/containers/${encodeURIComponent(identifier)}/example-domain-records`,
           {
@@ -56,3 +61,4 @@ export const getContainerExampleDomainRecords = (server: McpServer): void =>
       }
     },
   );
+};

@@ -5,13 +5,18 @@ type OptionsModel = Omit<RequestInit, "method" | "body"> & {
   queryParams?: Record<string, string | number>;
 };
 
-class HttpClient {
+export class HttpClient {
   private baseURL = "";
-  private baseHeaders: Record<string, string> = {};
+  private baseHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
 
-  constructor(baseURL: string, baseHeaders: Record<string, string>) {
+  constructor(baseURL: string, apiKey: string) {
     this.baseURL = baseURL;
-    this.baseHeaders = baseHeaders;
+    this.baseHeaders = {
+      ...this.baseHeaders,
+      "X-AUTH-TOKEN": apiKey,
+    };
   }
 
   public post<T>(
@@ -122,10 +127,3 @@ class HttpClient {
     throw new HTTPResponseError(response);
   }
 }
-
-const httpClient = new HttpClient("https://api.app.stape.io/api/v2", {
-  "Content-Type": "application/json",
-  "X-AUTH-TOKEN": process.env.STAPE_AUTH_KEY || "",
-});
-
-export default httpClient;

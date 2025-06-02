@@ -1,17 +1,22 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { OptionModel } from "../../models/OptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getReferralCommissionStatuses = (server: McpServer): void =>
+export const getReferralCommissionStatuses = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_referral_commission_statuses",
+    "stape_resource_get_referral_commission_statuses",
     "Gets referral commission statuses as options.",
     {},
     async () => {
-      log("Running tool: resource_get_referral_commission_statuses");
+      log("Running tool: stape_resource_get_referral_commission_statuses");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<OptionModel[]>(
           "/resources/referral-commission-statuses",
         );
@@ -27,3 +32,4 @@ export const getReferralCommissionStatuses = (server: McpServer): void =>
       }
     },
   );
+};

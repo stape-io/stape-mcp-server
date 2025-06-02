@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerAnonymizeCategoryOptionModel } from "../../models/ContainerAnonymizeCategoryOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerAnonymizeOptions = (server: McpServer): void =>
+export const getContainerAnonymizeOptions = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_container_anonymize_options",
+    "stape_resource_get_container_anonymize_options",
     "Gets container anonymize options as categories.",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: resource_get_container_anonymize_options");
+      log("Running tool: stape_resource_get_container_anonymize_options");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<
           ContainerAnonymizeCategoryOptionModel[]
         >("/resources/container-anonymize-options");
@@ -28,3 +33,4 @@ export const getContainerAnonymizeOptions = (server: McpServer): void =>
       }
     },
   );
+};

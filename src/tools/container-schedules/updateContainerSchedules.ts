@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerScheduleFormTypeSchema } from "../../schemas/ContainerScheduleFormTypeSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainerSchedules = (server: McpServer): void =>
+export const updateContainerSchedules = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_schedules_update",
+    "stape_container_schedules_update",
     "Replaces all schedules for a container. This endpoint allows you to update the full schedule list for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -20,9 +24,10 @@ export const updateContainerSchedules = (server: McpServer): void =>
         .describe("Array of schedule configuration objects."),
     },
     async ({ identifier, userWorkspaceIdentifier, containerSchedules }) => {
-      log("Running tool: container_schedules_update");
+      log("Running tool: stape_container_schedules_update");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put(
           `/containers/${identifier}/schedules`,
           JSON.stringify({ containerSchedules }),
@@ -44,3 +49,4 @@ export const updateContainerSchedules = (server: McpServer): void =>
       }
     },
   );
+};

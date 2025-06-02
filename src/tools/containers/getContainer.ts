@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerModel } from "../../models/ContainerModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainer = (server: McpServer): void =>
+export const getContainer = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_get_container",
+    "stape_containers_get_container",
     "Gets a container by its identifier.",
     {
       identifier: z.string().describe("Container identifier "),
@@ -16,9 +20,10 @@ export const getContainer = (server: McpServer): void =>
         .describe("The uniq user workspace identifier."),
     },
     async ({ identifier, userWorkspaceIdentifier }) => {
-      log("Running tool: containers_get_container");
+      log("Running tool: stape_containers_get_container");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerModel>(
           `/containers/${identifier}`,
           {
@@ -39,3 +44,4 @@ export const getContainer = (server: McpServer): void =>
       }
     },
   );
+};

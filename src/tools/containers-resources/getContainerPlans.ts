@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerPlanOptionModel } from "../../models/ContainerPlanOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerPlans = (server: McpServer): void =>
+export const getContainerPlans = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_plans",
+    "stape_containers_resources_get_plans",
     "Retrieve available subscription plans for a container. Requires the container identifier as a path parameter. Returns an array of ContainerPlanOptionModel.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const getContainerPlans = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerPlanOptionModel[]>(
           `/containers/${encodeURIComponent(identifier)}/plans`,
           {
@@ -41,3 +46,4 @@ export const getContainerPlans = (server: McpServer): void =>
       }
     },
   );
+};

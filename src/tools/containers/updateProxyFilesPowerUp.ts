@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerProxyFileFormTypeSchema } from "../../schemas/ContainerProxyFileFormTypeSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateProxyFilesPowerUp = (server: McpServer): void =>
+export const updateProxyFilesPowerUp = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_proxy_files_power_up",
+    "stape_containers_update_proxy_files_power_up",
     "Enables or disables the proxy-files power-up for a container. This endpoint allows you to control proxying of files with custom paths and cache settings for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -23,9 +27,10 @@ export const updateProxyFilesPowerUp = (server: McpServer): void =>
         .describe("Array of proxy file configuration objects."),
     },
     async ({ identifier, userWorkspaceIdentifier, isActive, options }) => {
-      log("Running tool: containers_update_proxy_files_power_up");
+      log("Running tool: stape_containers_update_proxy_files_power_up");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch(
           `/containers/${identifier}/power-ups/proxy-files`,
           JSON.stringify({ isActive, options }),
@@ -47,3 +52,4 @@ export const updateProxyFilesPowerUp = (server: McpServer): void =>
       }
     },
   );
+};

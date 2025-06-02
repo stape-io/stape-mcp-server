@@ -1,17 +1,22 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { OptionModel } from "../../models/OptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getStapeGatewayDomainCdnTypes = (server: McpServer): void =>
+export const getStapeGatewayDomainCdnTypes = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_stape_gateway_domain_cdn_types",
+    "stape_resource_get_stape_gateway_domain_cdn_types",
     "Gets stape gateway domain CDN types as options.",
     {},
     async () => {
-      log("Running tool: resource_get_stape_gateway_domain_cdn_types");
+      log("Running tool: stape_resource_get_stape_gateway_domain_cdn_types");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<OptionModel[]>(
           "/resources/stape-gateway-domain-cdn-types",
         );
@@ -27,3 +32,4 @@ export const getStapeGatewayDomainCdnTypes = (server: McpServer): void =>
       }
     },
   );
+};

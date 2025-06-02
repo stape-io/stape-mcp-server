@@ -1,17 +1,22 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { OptionModel } from "../../models/OptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getSignalsGatewayZones = (server: McpServer): void =>
+export const getSignalsGatewayZones = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_signals_gateway_zones",
+    "stape_resource_get_signals_gateway_zones",
     "Gets signals gateway zones as options.",
     {},
     async () => {
-      log("Running tool: resource_get_signals_gateway_zones");
+      log("Running tool: stape_resource_get_signals_gateway_zones");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<OptionModel[]>(
           "/resources/signals-gateway-zones",
         );
@@ -27,3 +32,4 @@ export const getSignalsGatewayZones = (server: McpServer): void =>
       }
     },
   );
+};

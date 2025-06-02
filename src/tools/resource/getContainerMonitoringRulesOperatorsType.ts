@@ -1,14 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { OptionModel } from "../../models/OptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const getContainerMonitoringRulesOperatorsType = (
   server: McpServer,
-): void =>
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_container_monitoring_rules_operators_type",
+    "stape_resource_get_container_monitoring_rules_operators_type",
     "Gets container monitoring rules operators type as options.",
     {},
     async (): Promise<CallToolResult> => {
@@ -17,6 +19,7 @@ export const getContainerMonitoringRulesOperatorsType = (
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<OptionModel[]>(
           "/resources/container-monitoring-rules-operators-type",
         );
@@ -32,3 +35,4 @@ export const getContainerMonitoringRulesOperatorsType = (
       }
     },
   );
+};

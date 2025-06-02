@@ -1,17 +1,22 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { GatewayPlanOptionModel } from "../../models/GatewayPlanOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getTiktokGatewaySubscriptionPlans = (server: McpServer): void =>
+export const getTiktokGatewaySubscriptionPlans = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_tiktok_gateway_subscription_plans",
+    "stape_resource_get_tiktok_gateway_subscription_plans",
     "Gets tiktok gateway subscription plans as options.",
     {},
     async () => {
-      log("Running tool: resource_get_tiktok_gateway_subscription_plans");
+      log("Running tool: stape_resource_get_tiktok_gateway_subscription_plans");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<GatewayPlanOptionModel[]>(
           "/resources/tiktok-gateway-subscription-plans",
         );
@@ -27,3 +32,4 @@ export const getTiktokGatewaySubscriptionPlans = (server: McpServer): void =>
       }
     },
   );
+};

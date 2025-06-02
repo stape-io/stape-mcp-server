@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerSurchargesModel } from "../../models/ContainerSurchargesModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerSurcharges = (server: McpServer): void =>
+export const getContainerSurcharges = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_surcharges",
+    "stape_containers_resources_get_surcharges",
     "Retrieve the current surcharges amount for a container. Requires the container identifier as a path parameter. Returns the surcharge amount.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -23,6 +27,7 @@ export const getContainerSurcharges = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerSurchargesModel>(
           `/containers/${encodeURIComponent(identifier)}/surcharges`,
           {
@@ -44,3 +49,4 @@ export const getContainerSurcharges = (server: McpServer): void =>
       }
     },
   );
+};

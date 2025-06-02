@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainerTransfer = (server: McpServer): void =>
+export const updateContainerTransfer = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_update_transfer",
+    "stape_containers_resources_update_transfer",
     "Updates (transfers) the container to a new owner by email. Use this endpoint to transfer container ownership to another user by specifying their email address.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -27,6 +31,7 @@ export const updateContainerTransfer = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<unknown>(
           `/containers/${encodeURIComponent(identifier)}/transfer`,
           JSON.stringify({ email }),
@@ -48,3 +53,4 @@ export const updateContainerTransfer = (server: McpServer): void =>
       }
     },
   );
+};

@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { CountryWithTranslationModel } from "../../models/CountryWithTranslationModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getPartnerCountries = (server: McpServer): void =>
+export const getPartnerCountries = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_partner_countries",
+    "stape_resource_get_partner_countries",
     "Gets partner countries as options. Requires _locale query parameter.",
     {
       _locale: z
@@ -14,9 +18,10 @@ export const getPartnerCountries = (server: McpServer): void =>
         .describe("Locale for translations (e.g., 'en', 'de', etc.)"),
     },
     async ({ _locale }) => {
-      log("Running tool: resource_get_partner_countries");
+      log("Running tool: stape_resource_get_partner_countries");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<CountryWithTranslationModel[]>(
           `/resources/partner-countries?_locale=${encodeURIComponent(_locale)}`,
         );
@@ -29,3 +34,4 @@ export const getPartnerCountries = (server: McpServer): void =>
       }
     },
   );
+};

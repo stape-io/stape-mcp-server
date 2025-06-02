@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerPaymentDataModel } from "../../models/ContainerPaymentDataModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerPaymentData = (server: McpServer): void =>
+export const getContainerPaymentData = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_payment_data",
+    "stape_containers_resources_get_payment_data",
     "Retrieve payment data (price and tax) for a container subscription. Requires the container identifier as a path parameter. Returns the payment data (price and tax) for the container subscription.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const getContainerPaymentData = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerPaymentDataModel>(
           `/containers/${encodeURIComponent(identifier)}/payment-data`,
           {
@@ -41,3 +46,4 @@ export const getContainerPaymentData = (server: McpServer): void =>
       }
     },
   );
+};

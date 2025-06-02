@@ -1,14 +1,18 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerProxyFile } from "../../models/ContainerProxyFileFormTypeModel";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerProxyFileFormTypeSchema } from "../../schemas/ContainerProxyFileFormTypeSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerProxyFiles = (server: McpServer): void =>
+export const getContainerProxyFiles = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_get_proxy_files",
+    "stape_container_get_proxy_files",
     "Gets proxy files for a container by identifier.",
     {
       identifier: z.string().describe("Container identifier"),
@@ -26,6 +30,7 @@ export const getContainerProxyFiles = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerProxyFile[]>(
           `/containers/${encodeURIComponent(identifier)}/proxy-files`,
           {
@@ -46,10 +51,14 @@ export const getContainerProxyFiles = (server: McpServer): void =>
       }
     },
   );
+};
 
-export const updateContainerProxyFiles = (server: McpServer): void =>
+export const updateContainerProxyFiles = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_update_proxy_files",
+    "stape_container_update_proxy_files",
     "Updates proxy files for a container by identifier.",
     {
       identifier: z.string().describe("Container identifier"),
@@ -74,6 +83,7 @@ export const updateContainerProxyFiles = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<ContainerProxyFile[]>(
           `/containers/${encodeURIComponent(identifier)}/proxy-files`,
           JSON.stringify({ containerProxyFiles }),
@@ -95,3 +105,4 @@ export const updateContainerProxyFiles = (server: McpServer): void =>
       }
     },
   );
+};

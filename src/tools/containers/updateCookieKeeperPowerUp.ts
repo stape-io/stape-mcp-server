@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerCookieKeeperFormType2Schema } from "../../schemas/ContainerCookieKeeperFormType2Schema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateCookieKeeperPowerUp = (server: McpServer): void =>
+export const updateCookieKeeperPowerUp = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_cookie_keeper_power_up",
+    "stape_containers_update_cookie_keeper_power_up",
     "Updates the cookie keeper power-up activation state and options for a container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -20,9 +24,10 @@ export const updateCookieKeeperPowerUp = (server: McpServer): void =>
       ...ContainerCookieKeeperFormType2Schema.shape,
     },
     async ({ identifier, userWorkspaceIdentifier, isActive, ...options }) => {
-      log("Running tool: containers_update_cookie_keeper_power_up");
+      log("Running tool: stape_containers_update_cookie_keeper_power_up");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch(
           `/containers/${identifier}/power-ups/cookie-keeper`,
           JSON.stringify({ isActive, options }),
@@ -44,3 +49,4 @@ export const updateCookieKeeperPowerUp = (server: McpServer): void =>
       }
     },
   );
+};

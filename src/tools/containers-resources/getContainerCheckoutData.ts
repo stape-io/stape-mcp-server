@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { UpcomingInvoiceModel } from "../../models/UpcomingInvoiceModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerCheckoutData = (server: McpServer): void =>
+export const getContainerCheckoutData = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_checkout_data",
+    "stape_containers_resources_get_checkout_data",
     "Retrieve detailed checkout and upcoming invoice data for a container subscription. Requires specifying the subscription plan and period. Optionally accepts a promo code. Returns pricing, trial, and payment details for the selected plan and period.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -24,6 +28,7 @@ export const getContainerCheckoutData = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<UpcomingInvoiceModel>(
           `/containers/${encodeURIComponent(identifier)}/checkout-data`,
           {
@@ -45,3 +50,4 @@ export const getContainerCheckoutData = (server: McpServer): void =>
       }
     },
   );
+};
