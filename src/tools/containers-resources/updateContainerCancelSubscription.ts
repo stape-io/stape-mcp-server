@@ -1,13 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { Container2Model } from "../../models/Container2Model";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { SubscriptionCancelReasonSchema } from "../../models/SubscriptionCancelReasonSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainerCancelSubscription = (server: McpServer): void =>
+export const updateContainerCancelSubscription = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_update_cancel_subscription",
+    "stape_containers_resources_update_cancel_subscription",
     "Update (cancel) a container subscription. Use this endpoint to cancel a container's subscription by providing detailed cancellation reasons and context in the request body.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -23,6 +27,7 @@ export const updateContainerCancelSubscription = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<Container2Model>(
           `/containers/${encodeURIComponent(identifier)}/cancel-subscription`,
           JSON.stringify({ cancelReason: body }),
@@ -44,3 +49,4 @@ export const updateContainerCancelSubscription = (server: McpServer): void =>
       }
     },
   );
+};

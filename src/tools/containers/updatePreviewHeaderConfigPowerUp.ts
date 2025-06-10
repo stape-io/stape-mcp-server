@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updatePreviewHeaderConfigPowerUp = (server: McpServer): void =>
+export const updatePreviewHeaderConfigPowerUp = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_preview_header_config_power_up",
+    "stape_containers_update_preview_header_config_power_up",
     "Updates the preview header config power-up activation state and options for a container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -19,9 +23,10 @@ export const updatePreviewHeaderConfigPowerUp = (server: McpServer): void =>
       options: z.string().optional().describe("Preview header config options."),
     },
     async ({ identifier, userWorkspaceIdentifier, isActive, options }) => {
-      log("Running tool: containers_update_preview_header_config_power_up");
+      log("Running tool: stape_containers_update_preview_header_config_power_up");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch(
           `/containers/${identifier}/power-ups/preview-header-config`,
           JSON.stringify({ isActive, options }),
@@ -43,3 +48,4 @@ export const updatePreviewHeaderConfigPowerUp = (server: McpServer): void =>
       }
     },
   );
+};

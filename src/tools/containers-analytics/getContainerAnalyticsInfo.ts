@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { AnalyticsInfoModel } from "../../models/AnalyticsInfoModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerAnalyticsInfo = (server: McpServer): void =>
+export const getContainerAnalyticsInfo = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_analytics_info",
+    "stape_containers_analytics_info",
     "Retrieves general analytics info for a container, including data collection status, tracking improvement suggestions, recovered info, and purchase info. Useful for understanding the overall analytics health and recovery status for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const getContainerAnalyticsInfo = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<AnalyticsInfoModel>(
           `/containers/${encodeURIComponent(identifier)}/analytics/info`,
           {
@@ -41,3 +46,4 @@ export const getContainerAnalyticsInfo = (server: McpServer): void =>
       }
     },
   );
+};

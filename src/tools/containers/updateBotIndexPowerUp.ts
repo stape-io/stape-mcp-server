@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateBotIndexPowerUp = (server: McpServer): void =>
+export const updateBotIndexPowerUp = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_bot_index_power_up",
+    "stape_containers_update_bot_index_power_up",
     "Enables or disables the bot-index power-up for a container. This endpoint allows you to control bot indexing features for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -18,9 +22,10 @@ export const updateBotIndexPowerUp = (server: McpServer): void =>
         .describe("Whether the bot-index power-up is active."),
     },
     async ({ identifier, userWorkspaceIdentifier, isActive }) => {
-      log("Running tool: containers_update_bot_index_power_up");
+      log("Running tool: stape_containers_update_bot_index_power_up");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch(
           `/containers/${identifier}/power-ups/bot-index`,
           JSON.stringify({ isActive }),
@@ -42,3 +47,4 @@ export const updateBotIndexPowerUp = (server: McpServer): void =>
       }
     },
   );
+};

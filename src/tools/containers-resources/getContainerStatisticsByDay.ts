@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerUsageStatisticsByDayModel } from "../../models/ContainerUsageStatisticsByDayModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerStatisticsByDay = (server: McpServer): void =>
+export const getContainerStatisticsByDay = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_statistics_by_day",
+    "stape_containers_resources_get_statistics_by_day",
     "Retrieves daily usage statistics for a container. Get current and previous billing period statistics by day, including detailed usage data. Use this endpoint to analyze daily resource consumption trends for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const getContainerStatisticsByDay = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<
           ContainerUsageStatisticsByDayModel[]
         >(`/containers/${encodeURIComponent(identifier)}/statistics-by-day`, {
@@ -40,3 +45,4 @@ export const getContainerStatisticsByDay = (server: McpServer): void =>
       }
     },
   );
+};

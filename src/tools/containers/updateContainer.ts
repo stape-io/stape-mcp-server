@@ -1,14 +1,18 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerModel } from "../../models/ContainerModel";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerCodeSettingsFormTypeSchema } from "../../schemas/ContainerCodeSettingsFormTypeSchema";
 import { ContainerCookieKeeperFormType2Schema } from "../../schemas/ContainerCookieKeeperFormType2Schema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainer = (server: McpServer): void =>
+export const updateContainer = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_container",
+    "stape_containers_update_container",
     "Updates a container by its identifier.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -56,9 +60,10 @@ export const updateContainer = (server: McpServer): void =>
         .describe("Service account credentials."),
     },
     async ({ identifier, userWorkspaceIdentifier, ...body }) => {
-      log("Running tool: containers_update_container");
+      log("Running tool: stape_containers_update_container");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<ContainerModel>(
           `/containers/${identifier}`,
           JSON.stringify(body),
@@ -80,3 +85,4 @@ export const updateContainer = (server: McpServer): void =>
       }
     },
   );
+};

@@ -1,13 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerPreviewModel } from "../../models/ContainerPreviewModel";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { PaginationModel } from "../../models/PaginationModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainers = (server: McpServer): void =>
+export const getContainers = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_get_containers",
+    "stape_containers_get_containers",
     "Gets containers with preview information.",
     {
       page: z.number().int().optional().describe("Page number for pagination"),
@@ -23,9 +27,10 @@ export const getContainers = (server: McpServer): void =>
         .describe("The uniq user workspace identifier."),
     },
     async ({ userWorkspaceIdentifier, ...queryParams }) => {
-      log("Running tool: containers_get_containers");
+      log("Running tool: stape_containers_get_containers");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<
           PaginationModel<ContainerPreviewModel>
         >("/containers", {
@@ -46,3 +51,4 @@ export const getContainers = (server: McpServer): void =>
       }
     },
   );
+};

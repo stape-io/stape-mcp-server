@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { UsageByDomainModel } from "../../models/UsageByDomainModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerUsageByDomain = (server: McpServer): void =>
+export const getContainerUsageByDomain = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_usage_by_domain",
+    "stape_containers_resources_get_usage_by_domain",
     "Retrieves usage statistics by domain for a container. Use this endpoint to get the request count and adBlock usage for each domain associated with the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const getContainerUsageByDomain = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<UsageByDomainModel[]>(
           `/containers/${encodeURIComponent(identifier)}/usage-by-domain`,
           {
@@ -41,3 +46,4 @@ export const getContainerUsageByDomain = (server: McpServer): void =>
       }
     },
   );
+};

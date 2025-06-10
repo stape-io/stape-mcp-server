@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerPlanOptionModel } from "../../models/ContainerPlanOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerSubscriptionPlans = (server: McpServer): void =>
+export const getContainerSubscriptionPlans = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_container_subscription_plans",
+    "stape_resource_get_container_subscription_plans",
     "Gets container subscription plans.",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: resource_get_container_subscription_plans");
+      log("Running tool: stape_resource_get_container_subscription_plans");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerPlanOptionModel[]>(
           "/resources/container-subscription-plans",
         );
@@ -28,3 +33,4 @@ export const getContainerSubscriptionPlans = (server: McpServer): void =>
       }
     },
   );
+};

@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerPeriods = (server: McpServer): void =>
+export const getContainerPeriods = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_periods",
+    "stape_containers_resources_get_periods",
     "Retrieve available subscription periods for a container. Requires the container identifier as a path parameter. Returns an array of strings (period identifiers).",
     {
       identifier: z.string().describe("Container identifier."),
@@ -20,6 +24,7 @@ export const getContainerPeriods = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<string[]>(
           `/containers/${encodeURIComponent(identifier)}/periods`,
           {
@@ -40,3 +45,4 @@ export const getContainerPeriods = (server: McpServer): void =>
       }
     },
   );
+};

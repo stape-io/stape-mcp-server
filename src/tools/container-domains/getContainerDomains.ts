@@ -1,14 +1,18 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerDomainModel } from "../../models/ContainerDomainModel";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { PaginationModel } from "../../models/PaginationModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerDomains = (server: McpServer): void =>
+export const getContainerDomains = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_get_domains",
+    "stape_container_get_domains",
     "Retrieves a paginated list of domains associated with a container, identified by its unique identifier. Supports limit, offset, page, and status query parameters.",
     {
       container: z.string().describe("Container identifier."),
@@ -32,6 +36,7 @@ export const getContainerDomains = (server: McpServer): void =>
       log(`Running tool: container_get_domains for container ${container}`);
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<
           PaginationModel<ContainerDomainModel>
         >(`/containers/${encodeURIComponent(container)}/domains`, {
@@ -52,3 +57,4 @@ export const getContainerDomains = (server: McpServer): void =>
       }
     },
   );
+};

@@ -1,13 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerDomainModel } from "../../models/ContainerDomainModel";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerDomainFormSchema } from "../../schemas/ContainerDomainFormSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainerDomain = (server: McpServer): void =>
+export const updateContainerDomain = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_update_domain",
+    "stape_container_update_domain",
     "Updates a specific domain for a container. Returns the updated domain object.",
     {
       container: z.string().describe("Container identifier."),
@@ -24,6 +28,7 @@ export const updateContainerDomain = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<ContainerDomainModel>(
           `/containers/${encodeURIComponent(container)}/domains/${encodeURIComponent(domain)}`,
           JSON.stringify(body),
@@ -45,3 +50,4 @@ export const updateContainerDomain = (server: McpServer): void =>
       }
     },
   );
+};

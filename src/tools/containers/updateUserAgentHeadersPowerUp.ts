@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateUserAgentHeadersPowerUp = (server: McpServer): void =>
+export const updateUserAgentHeadersPowerUp = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_update_user_agent_headers_power_up",
+    "stape_containers_update_user_agent_headers_power_up",
     "Updates the user-agent-headers power-up activation state for a container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -18,9 +22,10 @@ export const updateUserAgentHeadersPowerUp = (server: McpServer): void =>
         .describe("Whether the user-agent-headers power-up is active."),
     },
     async ({ identifier, userWorkspaceIdentifier, isActive }) => {
-      log("Running tool: containers_update_user_agent_headers_power_up");
+      log("Running tool: stape_containers_update_user_agent_headers_power_up");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch(
           `/containers/${identifier}/power-ups/user-agent-headers`,
           JSON.stringify({ isActive }),
@@ -42,3 +47,4 @@ export const updateUserAgentHeadersPowerUp = (server: McpServer): void =>
       }
     },
   );
+};

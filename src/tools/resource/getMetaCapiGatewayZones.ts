@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { OptionModel } from "../../models/OptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getMetaCapiGatewayZones = (server: McpServer): void =>
+export const getMetaCapiGatewayZones = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_meta_capi_gateway_zones",
+    "stape_resource_meta_capi_gateway_zones",
     "Gets list of available CAPI gateway zones",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: resource_meta_capi_gateway_zones");
+      log("Running tool: stape_resource_meta_capi_gateway_zones");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<OptionModel[]>(
           "/resources/meta/capi-gateway-zones",
         );
@@ -28,3 +33,4 @@ export const getMetaCapiGatewayZones = (server: McpServer): void =>
       }
     },
   );
+};

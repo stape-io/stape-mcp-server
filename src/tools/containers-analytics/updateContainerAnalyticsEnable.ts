@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainerAnalyticsEnable = (server: McpServer): void =>
+export const updateContainerAnalyticsEnable = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_analytics_enable",
+    "stape_containers_analytics_enable",
     "Enables or disables analytics for a container. Use this endpoint to toggle analytics collection for the specified container by setting the 'enabled' field in the request body. Useful for controlling whether analytics data is collected for the container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -25,6 +29,7 @@ export const updateContainerAnalyticsEnable = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.patch<unknown>(
           `/containers/${encodeURIComponent(identifier)}/analytics-enable`,
           JSON.stringify({ enabled }),
@@ -46,3 +51,4 @@ export const updateContainerAnalyticsEnable = (server: McpServer): void =>
       }
     },
   );
+};

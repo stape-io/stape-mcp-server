@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { IntegrationClickFormTypeSchema } from "../../models/IntegrationClickFormTypeSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const createContainerIntegrationClick = (server: McpServer): void =>
+export const createContainerIntegrationClick = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_create_integration_click",
+    "stape_containers_resources_create_integration_click",
     "Send an integration click event for a container. Use this endpoint to record when a user clicks an integration action button (e.g., 'learn more', 'install') for a specific integration type and name.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -28,6 +32,7 @@ export const createContainerIntegrationClick = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.post<unknown>(
           `/containers/${encodeURIComponent(identifier)}/integration-click`,
           JSON.stringify({ integrationType, integrationName, buttonType }),
@@ -49,3 +54,4 @@ export const createContainerIntegrationClick = (server: McpServer): void =>
       }
     },
   );
+};

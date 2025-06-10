@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerModel } from "../../models/ContainerModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const updateContainerReactivate = (server: McpServer): void =>
+export const updateContainerReactivate = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_update_reactivate",
+    "stape_containers_resources_update_reactivate",
     "Re-activate container if it was disabled because of not being used. Use this endpoint to restore a previously disabled container back to active status and receive the updated container object.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const updateContainerReactivate = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<ContainerModel>(
           `/containers/${encodeURIComponent(identifier)}/reactivate`,
           undefined,
@@ -42,3 +47,4 @@ export const updateContainerReactivate = (server: McpServer): void =>
       }
     },
   );
+};

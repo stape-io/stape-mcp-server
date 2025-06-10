@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { AnalyticsClientModel } from "../../models/AnalyticsClientModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerAnalyticsClients = (server: McpServer): void =>
+export const getContainerAnalyticsClients = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_analytics_clients",
+    "stape_containers_analytics_clients",
     "Retrieves detailed subscription usage analytics for a container, grouped by client and date. Returns a list of clients with their event usage, adBlock, and Safari usage statistics. Supports optional filtering by start and end date (timestamps). Useful for understanding client-specific engagement and ad-blocker prevalence among users.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -26,6 +30,7 @@ export const getContainerAnalyticsClients = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<AnalyticsClientModel[]>(
           `/containers/${encodeURIComponent(identifier)}/analytics/clients`,
           {
@@ -47,3 +52,4 @@ export const getContainerAnalyticsClients = (server: McpServer): void =>
       }
     },
   );
+};

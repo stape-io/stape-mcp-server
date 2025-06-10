@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerDomainModel } from "../../models/ContainerDomainModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const createContainerDomain = (server: McpServer): void =>
+export const createContainerDomain = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_create_domain",
+    "stape_container_create_domain",
     "Creates a new domain for a container. Returns the created domain object.",
     {
       container: z.string().describe("Container identifier."),
@@ -29,6 +33,7 @@ export const createContainerDomain = (server: McpServer): void =>
       log(`Running tool: container_create_domain for container ${container}`);
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.post<ContainerDomainModel>(
           `/containers/${encodeURIComponent(container)}/domains`,
           JSON.stringify(body),
@@ -50,3 +55,4 @@ export const createContainerDomain = (server: McpServer): void =>
       }
     },
   );
+};

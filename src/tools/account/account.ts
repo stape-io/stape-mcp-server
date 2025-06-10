@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { AccountModel } from "../../models/AccountModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getAccount = (server: McpServer): void =>
+export const getAccount = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "account_get_account",
+    "stape_account_get_account",
     "Gets account information.",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: account_get_account");
+      log("Running tool: stape_account_get_account");
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<AccountModel>("/account");
 
         return {
@@ -23,10 +28,14 @@ export const getAccount = (server: McpServer): void =>
       }
     },
   );
+};
 
-export const updateAccount = (server: McpServer): void =>
+export const updateAccount = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "account_update_account",
+    "stape_account_update_account",
     "Updates account information.",
     {
       nameFirst: z.string().describe("First name"),
@@ -37,9 +46,10 @@ export const updateAccount = (server: McpServer): void =>
         .describe("Consent email marketing"),
     },
     async (args): Promise<CallToolResult> => {
-      log("Running tool: account_update_account");
+      log("Running tool: stape_account_update_account");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<AccountModel>(
           "/account",
           JSON.stringify(args),
@@ -53,3 +63,4 @@ export const updateAccount = (server: McpServer): void =>
       }
     },
   );
+};

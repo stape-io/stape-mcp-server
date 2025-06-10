@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { CodeSettingsScriptsModel } from "../../models/CodeSettingsScriptsModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerCodeSettingsScripts = (server: McpServer): void =>
+export const getContainerCodeSettingsScripts = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_code_settings_scripts",
+    "stape_containers_resources_get_code_settings_scripts",
     "Retrieves code settings scripts for a container. Use this endpoint to get the tagging server URL, GTM ID, JavaScript code, and optional no-script code for the specified container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const getContainerCodeSettingsScripts = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<CodeSettingsScriptsModel>(
           `/containers/${encodeURIComponent(identifier)}/code-settings-scripts`,
           {
@@ -41,3 +46,4 @@ export const getContainerCodeSettingsScripts = (server: McpServer): void =>
       }
     },
   );
+};

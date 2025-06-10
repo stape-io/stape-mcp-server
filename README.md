@@ -2,23 +2,37 @@
 
 This project implements an **MCP (Model Context Protocol) server** for the **Stape** platform.
 
-## Installation
+## Prerequisites
+- Node.js (v18 or higher)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Bukashk0zzz/stape-mcp-server.git
-   cd stape-mcp-server
-   npm install
-   ```
+## Access the remote MCP server from Claude Desktop
 
+Open Claude Desktop and navigate to Settings -> Developer -> Edit Config. This opens the configuration file that controls which MCP servers Claude can access.
 
-1. Clone the repository
+Replace the content with the following configuration (make sure npx is installed on your machine). Get Stape API key from your Stape account and set it in the configuration file instead of ${your_stape_api_key}. Once you restart Claude Desktop.
 
-2. Install dependencies:
-   ```bash
-    npm install
-   ```
-3. Get Stape API key from your Stape account and set it in the environment file:
-   ```bash
-   STAPE_AUTH_KEY=your_stape_api_key
-   ```
+```json
+{
+  "mcpServers": {
+    "stape-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.stape.ai/sse",
+        "--header",
+        "Authorization: ${your_stape_api_key}"
+      ]
+    }
+  }
+}
+```
+
+### Troubleshooting
+
+[mcp-remote](https://github.com/geelen/mcp-remote#readme) stores all the credential information inside ~/.mcp-auth (or wherever your MCP_REMOTE_CONFIG_DIR points to). If you're having persistent issues, try running:
+You can run rm -rf ~/.mcp-auth to clear any locally stored state and tokens.
+```
+rm -rf ~/.mcp-auth
+```
+Then restarting your MCP client.

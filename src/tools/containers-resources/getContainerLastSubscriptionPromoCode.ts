@@ -1,14 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { PromoCodeModel } from "../../models/PromoCodeModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const getContainerLastSubscriptionPromoCode = (
   server: McpServer,
-): void =>
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_last_subscription_promo_code",
+    "stape_containers_resources_get_last_subscription_promo_code",
     "Retrieve the last used promo code for a container's subscription. Returns code, type, amount, and currencyCode for the last applied promo code.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -23,6 +25,7 @@ export const getContainerLastSubscriptionPromoCode = (
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<PromoCodeModel>(
           `/containers/${encodeURIComponent(identifier)}/last-subscription-promo-code`,
           {
@@ -43,3 +46,4 @@ export const getContainerLastSubscriptionPromoCode = (
       }
     },
   );
+};

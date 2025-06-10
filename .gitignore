@@ -17,7 +17,12 @@ keys
 
 # Logs
 logs/
-*.log 
+*.log
 
 # Build output
 dist/
+
+# wrangler project
+
+.dev.vars
+.wrangler/

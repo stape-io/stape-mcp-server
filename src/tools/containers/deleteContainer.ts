@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const deleteContainer = (server: McpServer): void =>
+export const deleteContainer = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_delete_container",
+    "stape_containers_delete_container",
     "Deletes a container by its identifier.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -15,9 +19,10 @@ export const deleteContainer = (server: McpServer): void =>
         .describe("The uniq user workspace identifier."),
     },
     async ({ identifier, userWorkspaceIdentifier }) => {
-      log("Running tool: containers_delete_container");
+      log("Running tool: stape_containers_delete_container");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.delete(`/containers/${identifier}`, {
           headers: userWorkspaceIdentifier
             ? { "X-WORKSPACE": userWorkspaceIdentifier }
@@ -35,3 +40,4 @@ export const deleteContainer = (server: McpServer): void =>
       }
     },
   );
+};

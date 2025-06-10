@@ -1,13 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const getContainerPaddlePaymentMethodTransactions = (
   server: McpServer,
-): void =>
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_get_paddle_payment_method_transactions",
+    "stape_containers_resources_get_paddle_payment_transactions",
     "Get transaction to change payment method",
     {
       identifier: z.string().describe("Container identifier."),
@@ -18,10 +20,11 @@ export const getContainerPaddlePaymentMethodTransactions = (
     },
     async ({ identifier, userWorkspaceIdentifier }) => {
       log(
-        `Running tool: containers_resources_get_paddle_payment_method_transactions for identifier ${identifier}`,
+        `Running tool: stape_containers_resources_get_paddle_payment_transactions for identifier ${identifier}`,
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<unknown>(
           `/containers/${encodeURIComponent(identifier)}/paddle/payment-method-transactions`,
           {
@@ -42,3 +45,4 @@ export const getContainerPaddlePaymentMethodTransactions = (
       }
     },
   );
+};

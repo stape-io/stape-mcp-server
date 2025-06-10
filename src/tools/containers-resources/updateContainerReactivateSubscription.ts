@@ -1,14 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { Container2Model } from "../../models/Container2Model";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const updateContainerReactivateSubscription = (
   server: McpServer,
-): void =>
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_update_reactivate_subscription",
+    "stape_containers_resources_update_reactivate_subscription",
     "Re-activate a previously cancelled container subscription and restore it to active status. Requires the container identifier. Returns the updated container details as Container2Model.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -23,6 +25,7 @@ export const updateContainerReactivateSubscription = (
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.put<Container2Model>(
           `/containers/${encodeURIComponent(identifier)}/reactivate-subscription`,
           undefined,
@@ -44,3 +47,4 @@ export const updateContainerReactivateSubscription = (
       }
     },
   );
+};

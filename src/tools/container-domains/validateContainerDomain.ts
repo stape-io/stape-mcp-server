@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerDomainFormSchema } from "../../schemas/ContainerDomainFormSchema";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const validateContainerDomain = (server: McpServer): void =>
+export const validateContainerDomain = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_validate_domain",
+    "stape_container_validate_domain",
     "Validates a domain for a container using the provided form schema.",
     {
       container: z.string().describe("Container identifier."),
@@ -20,6 +24,7 @@ export const validateContainerDomain = (server: McpServer): void =>
       log(`Running tool: container_validate_domain for container ${container}`);
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.post(
           `/containers/${encodeURIComponent(container)}/domains/validate`,
           JSON.stringify(body),
@@ -41,3 +46,4 @@ export const validateContainerDomain = (server: McpServer): void =>
       }
     },
   );
+};

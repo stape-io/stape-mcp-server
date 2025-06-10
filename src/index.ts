@@ -1,56 +1,44 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { McpAgent } from "agents/mcp";
+import { Hono } from "hono";
+import { McpAgentPropsModel } from "./models/McpAgentModel";
 import { tools } from "./tools";
-import { getPackageVersion, loadEnv, log } from "./utils";
+import { getPackageVersion } from "./utils";
 
-// Load environment variables first
-loadEnv();
+const app = new Hono<{
+  Bindings: Env;
+}>();
 
-// Initialize the server
-const server = new McpServer({
-  name: "stape-mcp-server",
-  version: getPackageVersion(),
-  protocolVersion: "1.0",
-  vendor: "stape-io",
-  homepage: "https://github.com/stape-io/stape-mcp-server",
-});
+type State = null;
 
-// Register all tools with proper error handling
-tools.forEach((register) => {
-  try {
-    register(server);
-  } catch (error) {
-    log(`❌ Failed to register a tool: ${error}`);
-  }
-});
+export class StapeMCPServer extends McpAgent<Env, State, McpAgentPropsModel> {
+  server = new McpServer({
+    name: "stape-mcp-server",
+    version: getPackageVersion(),
+    protocolVersion: "1.0",
+    vendor: "stape-io",
+    homepage: "https://github.com/stape-io/stape-mcp-server",
+  });
 
-async function main(): Promise<void> {
-  try {
-    log("ℹ️ Starting MCP server with stdio transport...");
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
-    log("✅ MCP server started");
-
-    // Graceful shutdown handling
-    const shutdown = async function () {
-      log("ℹ️ Shutting down MCP server...");
-      try {
-        await server.close();
-        log("✅ MCP server stopped gracefully");
-        process.exit(0);
-      } catch (error) {
-        log(`❌ Error during shutdown: ${error}`);
-        process.exit(1);
-      }
-    };
-
-    process.on("SIGINT", shutdown);
-    process.on("SIGTERM", shutdown);
-  } catch (error) {
-    log(`❌ Error starting server: ${error}`);
-    process.exit(1);
+  async init() {
+    tools.forEach((register) => {
+      register(this.server, { props: this.props, env: this.env });
+    });
   }
 }
 
-// Start the server
-main();
+app.mount("/", (req, env, ctx) => {
+  const apiKey = req.headers.get("authorization");
+
+  if (!apiKey) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  ctx.props = {
+    apiKey,
+  };
+
+  return StapeMCPServer.mount("/sse").fetch(req, env, ctx);
+});
+
+export default app;

@@ -1,13 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const createContainerPaddleCompleteTransactions = (
   server: McpServer,
-): void =>
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "containers_resources_create_paddle_complete_transactions",
+    "stape_containers_resources_create_paddle_complete_transactions",
     "Completes pending Paddle transactions for a container. Use this endpoint to finalize payment transactions for the specified container, typically after a payment method change or approval.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -22,6 +24,7 @@ export const createContainerPaddleCompleteTransactions = (
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.post<unknown>(
           `/containers/${encodeURIComponent(identifier)}/paddle/complete-transactions`,
           undefined,
@@ -43,3 +46,4 @@ export const createContainerPaddleCompleteTransactions = (
       }
     },
   );
+};

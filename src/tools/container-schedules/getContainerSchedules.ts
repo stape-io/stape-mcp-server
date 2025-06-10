@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerScheduleModel } from "../../models/ContainerScheduleModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerSchedules = (server: McpServer): void =>
+export const getContainerSchedules = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_schedules_get",
+    "stape_container_schedules_get",
     "Fetches all schedules for a container.",
     {
       identifier: z.string().describe("Container identifier."),
@@ -16,9 +20,10 @@ export const getContainerSchedules = (server: McpServer): void =>
         .describe("The uniq user workspace identifier."),
     },
     async ({ identifier, userWorkspaceIdentifier }) => {
-      log("Running tool: container_schedules_get");
+      log("Running tool: stape_container_schedules_get");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerScheduleModel[]>(
           `/containers/${identifier}/schedules`,
           {
@@ -39,3 +44,4 @@ export const getContainerSchedules = (server: McpServer): void =>
       }
     },
   );
+};

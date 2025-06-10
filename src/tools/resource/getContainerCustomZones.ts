@@ -1,18 +1,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerZoneOptionModel } from "../../models/ContainerZoneOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const getContainerCustomZones = (server: McpServer): void =>
+export const getContainerCustomZones = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_get_container_custom_zones",
+    "stape_resource_get_container_custom_zones",
     "Gets container custom zones as options.",
     {},
     async (): Promise<CallToolResult> => {
-      log("Running tool: resource_get_container_custom_zones");
+      log("Running tool: stape_resource_get_container_custom_zones");
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<ContainerZoneOptionModel[]>(
           "/resources/container-custom-zones",
         );
@@ -28,3 +33,4 @@ export const getContainerCustomZones = (server: McpServer): void =>
       }
     },
   );
+};

@@ -1,11 +1,15 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
-export const deleteContainerDomain = (server: McpServer): void =>
+export const deleteContainerDomain = (
+  server: McpServer,
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "container_delete_domain",
+    "stape_container_delete_domain",
     "Deletes a specific domain from a container.",
     {
       container: z.string().describe("Container identifier."),
@@ -21,6 +25,7 @@ export const deleteContainerDomain = (server: McpServer): void =>
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.delete(
           `/containers/${encodeURIComponent(container)}/domains/${encodeURIComponent(domain)}`,
           {
@@ -41,3 +46,4 @@ export const deleteContainerDomain = (server: McpServer): void =>
       }
     },
   );
+};

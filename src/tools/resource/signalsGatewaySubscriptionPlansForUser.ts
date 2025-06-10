@@ -1,15 +1,17 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { API_APP_STAPE_IO } from "../../constants/api";
+import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { SignalsGatewayPlanOptionModel } from "../../models/SignalsGatewayPlanOptionModel";
-import { createErrorResponse, log } from "../../utils";
-import httpClient from "../../utils/httpClient";
+import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const signalsGatewaySubscriptionPlansForUser = (
   server: McpServer,
-): void =>
+  { props }: McpAgentToolParamsModel,
+): void => {
   server.tool(
-    "resource_signals_gateway_subscription_plans_for_user",
+    "stape_resource_signals_gateway_subscription_plans_for_user",
     "Gets list of signals gateway subscription plans for the user",
     {
       userWorkspaceIdentifier: z
@@ -19,10 +21,11 @@ export const signalsGatewaySubscriptionPlansForUser = (
     },
     async ({ userWorkspaceIdentifier }): Promise<CallToolResult> => {
       log(
-        `Running tool: resource_signals_gateway_subscription_plans_for_user for account ${userWorkspaceIdentifier}`,
+        `Running tool: stape_resource_signals_gateway_subscription_plans_for_user for account ${userWorkspaceIdentifier}`,
       );
 
       try {
+        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
         const response = await httpClient.get<SignalsGatewayPlanOptionModel[]>(
           "/resources/signals-gateway-subscription-plans-for-user",
           {
@@ -43,3 +46,4 @@ export const signalsGatewaySubscriptionPlansForUser = (
       }
     },
   );
+};
