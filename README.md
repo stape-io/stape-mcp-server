@@ -9,7 +9,7 @@ This project implements an **MCP (Model Context Protocol) server** for the **Sta
 
 Open Claude Desktop and navigate to Settings -> Developer -> Edit Config. This opens the configuration file that controls which MCP servers Claude can access.
 
-Replace the content with the following configuration. Get Stape API key from your Stape account and set it in the configuration file instead of ${your_stape_api_key}. Once you restart Claude Desktop.
+Replace the content with the following configuration (make sure npx is installed on your machine). Get Stape API key from your Stape account and set it in the configuration file instead of ${your_stape_api_key}. Once you restart Claude Desktop.
 
 ```json
 {
@@ -19,7 +19,7 @@ Replace the content with the following configuration. Get Stape API key from you
       "args": [
         "-y",
         "mcp-remote",
-        "${DOMAIN}/sse",
+        "https://stape-mcp-server.stape.workers.dev/sse",
         "--header",
         "Authorization: ${your_stape_api_key}"
       ]

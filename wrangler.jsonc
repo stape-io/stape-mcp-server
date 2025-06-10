@@ -2,7 +2,7 @@
  * For more details on how to configure Wrangler, refer to:
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
-{
+ {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "stape-mcp-server",
   "main": "src/index.ts",
@@ -15,14 +15,20 @@
     }
   ],
   "durable_objects": {
-    "bindings": [
-      {
-        "class_name": "StapeMCPServer",
-        "name": "MCP_OBJECT"
-      }
-    ]
+  "bindings": [
+    {
+      "class_name": "StapeMCPServer",
+      "name": "MCP_OBJECT"
+    }
+  ]
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "routes": [
+    {
+    "pattern": "mcp.stape.ai",
+    "custom_domain": true
+    }
+  ]
 }
