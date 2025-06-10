@@ -2,7 +2,9 @@ name: Deploy
 
 on:
   push:
-    branches: main
+    branches: 
+    - main
+    - OPS-1022/deploy-mcp-server
   workflow_dispatch:
 
 jobs:
