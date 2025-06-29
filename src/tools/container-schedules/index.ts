@@ -1,7 +1,5 @@
-import { getContainerSchedules } from "./getContainerSchedules";
-import { updateContainerSchedules } from "./updateContainerSchedules";
+import { containerSchedulesActions } from "./containerSchedulesActions";
 
 export const containerSchedulesTools = [
-  getContainerSchedules,
-  updateContainerSchedules,
+  containerSchedulesActions,
 ];

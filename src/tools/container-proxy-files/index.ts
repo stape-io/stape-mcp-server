@@ -1,9 +1,3 @@
-import {
-  getContainerProxyFiles,
-  updateContainerProxyFiles,
-} from "./proxyFiles";
+import { containerProxyFilesActions } from "./containerProxyFilesActions";
 
-export const containerProxyFilesTools = [
-  getContainerProxyFiles,
-  updateContainerProxyFiles,
-];
+export const containerProxyFilesTools = [containerProxyFilesActions];

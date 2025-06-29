@@ -1,3 +1,3 @@
-import { getAccount, updateAccount } from "./account";
+import { accountActions } from "./accountActions";
 
-export const accountTools = [getAccount, updateAccount];
+export const accountTools = [accountActions];
