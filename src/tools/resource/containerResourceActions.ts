@@ -11,7 +11,7 @@ export const containerResourceActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_resource_actions",
+    "stape_container_resource",
     "Tool for retrieving container-related resources and configurations. Use the 'type' parameter to specify which container resource to retrieve.",
     {
       type: z
@@ -34,7 +34,7 @@ export const containerResourceActions = (
         .describe("The unique user workspace identifier."),
     },
     async ({ type, userWorkspaceIdentifier }): Promise<CallToolResult> => {
-      log(`Running tool: container_resource_manager - type: ${type}`);
+      log(`Running tool: stape_container_resource - type: ${type}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

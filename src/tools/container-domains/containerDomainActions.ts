@@ -14,7 +14,7 @@ export const containerDomainActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_domains_actions",
+    "stape_container_domains",
     "Comprehensive tool for managing container domains. Supports CRUD operations, validation, and Entri authorization. Use the 'action' parameter to specify the operation: 'list', 'get', 'create', 'update', 'delete', 'validate', 'revalidate', 'get_entri'.",
     {
       action: z
@@ -80,7 +80,7 @@ export const containerDomainActions = (
       connectionType,
     }): Promise<CallToolResult> => {
       log(
-        `Running tool: container_domains_manager - action: ${action} for container ${container}`,
+        `Running tool: stape_container_domains - action: ${action} for container ${container}`,
       );
 
       try {

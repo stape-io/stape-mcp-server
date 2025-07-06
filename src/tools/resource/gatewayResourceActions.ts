@@ -11,7 +11,7 @@ export const gatewayResourceActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_gateway_resource_actions",
+    "stape_gateway_resource",
     "Tool for retrieving gateway-related resources and configurations. Use the 'type' parameter to specify which gateway resource to retrieve.",
     {
       type: z
@@ -42,7 +42,7 @@ export const gatewayResourceActions = (
         .describe("The unique user workspace identifier."),
     },
     async ({ type, userWorkspaceIdentifier }): Promise<CallToolResult> => {
-      log(`Running tool: gateway_resource_manager - type: ${type}`);
+      log(`Running tool: stape_gateway_resource - type: ${type}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

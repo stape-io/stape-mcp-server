@@ -11,7 +11,7 @@ export const accountActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_account_actions",
+    "stape_account",
     "Comprehensive tool for managing account information. Supports getting account information and updating account details. Use the 'action' parameter to specify the operation: 'get' or 'update'.",
     {
       action: z
@@ -34,7 +34,7 @@ export const accountActions = (
         ),
     },
     async ({ action, updateConfig }): Promise<CallToolResult> => {
-      log(`Running tool: account_manager - action: ${action}`);
+      log(`Running tool: stape_account - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

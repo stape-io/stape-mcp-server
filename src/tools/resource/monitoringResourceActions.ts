@@ -11,7 +11,7 @@ export const monitoringResourceActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_monitoring_resource_actions",
+    "stape_monitoring_resource",
     "Tool for retrieving monitoring-related resources and configurations. Use the 'type' parameter to specify which monitoring resource to retrieve.",
     {
       type: z
@@ -31,7 +31,7 @@ export const monitoringResourceActions = (
         .describe("The unique user workspace identifier."),
     },
     async ({ type, userWorkspaceIdentifier }): Promise<CallToolResult> => {
-      log(`Running tool: monitoring_resource_manager - type: ${type}`);
+      log(`Running tool: stape_monitoring_resource - type: ${type}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

@@ -12,7 +12,7 @@ export const containerProxyFilesActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_proxy_files_actions",
+    "stape_container_proxy_files",
     "Comprehensive tool for managing container proxy files. Supports getting proxy files and updating/replacing all proxy files for a container. Use the 'action' parameter to specify the operation: 'get' or 'update'.",
     {
       action: z
@@ -35,7 +35,7 @@ export const containerProxyFilesActions = (
       userWorkspaceIdentifier,
       proxyFilesConfig,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_proxy_files_manager - action: ${action}`);
+      log(`Running tool: stape_container_proxy_files - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

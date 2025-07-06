@@ -2,10 +2,13 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { API_APP_STAPE_IO } from "../../constants/api";
+import { Container2Model } from "../../models/Container2Model";
 import { ContainerPaymentDataModel } from "../../models/ContainerPaymentDataModel";
 import { ContainerPlanOptionModel } from "../../models/ContainerPlanOptionModel";
-import { ContainerSubscriptionChangePlanFormTypeSchema } from "../../models/ContainerSubscriptionChangePlanFormTypeSchema";
 import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { UpcomingInvoiceModel } from "../../models/UpcomingInvoiceModel";
+import { ContainerSubscriptionChangePlanFormTypeSchema } from "../../schemas/ContainerSubscriptionChangePlanFormTypeSchema";
+import { SubscriptionCancelReasonSchema } from "../../schemas/SubscriptionCancelReasonSchema";
 import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const containerSubscriptionActions = (
@@ -13,7 +16,7 @@ export const containerSubscriptionActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_subscription_actions",
+    "stape_container_subscription",
     "Comprehensive tool for managing container subscriptions and billing. Supports getting plans, periods, payment data, checkout data, and managing subscription changes, cancellations, reactivations, and transfers. Use the 'action' parameter to specify the operation.",
     {
       action: z
@@ -39,15 +42,15 @@ export const containerSubscriptionActions = (
         ContainerSubscriptionChangePlanFormTypeSchema.optional().describe(
           "Change plan configuration. Required when action is 'change_plan'.",
         ),
-      transferConfig: z
-        .object({
-          targetWorkspaceIdentifier: z
-            .string()
-            .describe("Target workspace identifier for transfer."),
-        })
+      email: z
+        .string()
         .optional()
         .describe(
-          "Transfer configuration. Required when action is 'transfer_container'.",
+          "Email address of the new container owner. Required when action is 'transfer_container'.",
+        ),
+      cancelSubscriptionConfig:
+        SubscriptionCancelReasonSchema.optional().describe(
+          "Cancel reason configuration. Required when action is 'cancel_subscription'.",
         ),
     },
     async ({
@@ -55,9 +58,10 @@ export const containerSubscriptionActions = (
       identifier,
       userWorkspaceIdentifier,
       changePlanConfig,
-      transferConfig,
+      cancelSubscriptionConfig,
+      email,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_subscription_manager - action: ${action}`);
+      log(`Running tool: stape_container_subscription - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
@@ -80,7 +84,7 @@ export const containerSubscriptionActions = (
           }
 
           case "get_periods": {
-            const response = await httpClient.get<unknown>(
+            const response = await httpClient.get<string[]>(
               `/containers/${encodeURIComponent(identifier)}/periods`,
               { headers },
             );
@@ -106,7 +110,7 @@ export const containerSubscriptionActions = (
           }
 
           case "get_checkout_data": {
-            const response = await httpClient.get<unknown>(
+            const response = await httpClient.get<UpcomingInvoiceModel>(
               `/containers/${encodeURIComponent(identifier)}/checkout-data`,
               { headers },
             );
@@ -121,7 +125,7 @@ export const containerSubscriptionActions = (
           case "change_plan": {
             if (!changePlanConfig) {
               throw new Error(
-                "changePlanConfig is required for change_plan action",
+                `changePlanConfig is required for ${action} action`,
               );
             }
 
@@ -139,9 +143,15 @@ export const containerSubscriptionActions = (
           }
 
           case "cancel_subscription": {
-            const response = await httpClient.put<unknown>(
+            if (!cancelSubscriptionConfig) {
+              throw new Error(
+                `cancelSubscriptionConfig is required for ${action} action`,
+              );
+            }
+
+            const response = await httpClient.put<Container2Model>(
               `/containers/${encodeURIComponent(identifier)}/cancel-subscription`,
-              JSON.stringify({}),
+              JSON.stringify({ cancelReason: cancelSubscriptionConfig }),
               { headers },
             );
 
@@ -153,9 +163,9 @@ export const containerSubscriptionActions = (
           }
 
           case "reactivate_subscription": {
-            const response = await httpClient.put<unknown>(
+            const response = await httpClient.put<Container2Model>(
               `/containers/${encodeURIComponent(identifier)}/reactivate-subscription`,
-              JSON.stringify({}),
+              undefined,
               { headers },
             );
 
@@ -167,18 +177,13 @@ export const containerSubscriptionActions = (
           }
 
           case "transfer_container": {
-            if (!transferConfig) {
-              throw new Error(
-                `transferConfig is required for ${action} action`,
-              );
+            if (!email) {
+              throw new Error(`email is required for ${action} action`);
             }
 
             const response = await httpClient.put<unknown>(
               `/containers/${encodeURIComponent(identifier)}/transfer`,
-              JSON.stringify({
-                targetWorkspaceIdentifier:
-                  transferConfig.targetWorkspaceIdentifier,
-              }),
+              JSON.stringify({ email }),
               { headers },
             );
 

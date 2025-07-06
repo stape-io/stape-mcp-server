@@ -14,7 +14,7 @@ export const containerStatisticsActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_statistics_actions",
+    "stape_container_statistics",
     "Comprehensive tool for managing container statistics and analytics. Supports getting usage statistics, daily statistics, usage by domain, and surcharges. Use the 'action' parameter to specify the operation: 'get_statistics', 'get_statistics_by_day', 'get_usage_by_domain', or 'get_surcharges'.",
     {
       action: z
@@ -32,41 +32,30 @@ export const containerStatisticsActions = (
         .string()
         .optional()
         .describe("The unique user workspace identifier."),
-      statisticsConfig: z
-        .object({
-          host: z
-            .string()
-            .optional()
-            .describe("Domain name to filter statistics by (host parameter)."),
-        })
+      host: z
+        .string()
         .optional()
         .describe(
-          "Statistics configuration for filtering. Used when action is 'get_statistics'.",
+          "Domain name to filter statistics by (host parameter). Used when action is 'get_statistics'.",
         ),
-      dateRangeConfig: z
-        .object({
-          start: z
-            .number()
-            .optional()
-            .describe("Start date (timestamp, optional)."),
-          end: z
-            .number()
-            .optional()
-            .describe("End date (timestamp, optional)."),
-        })
+      plan: z
+        .string()
         .optional()
-        .describe(
-          "Date range configuration for daily statistics. Used when action is 'get_statistics_by_day'.",
-        ),
+        .describe("Subscription plan. Used when action is 'get_surcharges'."),
+      period: z
+        .string()
+        .optional()
+        .describe("Subscription period. Used when action is 'get_surcharges'."),
     },
     async ({
       action,
       identifier,
       userWorkspaceIdentifier,
-      statisticsConfig,
-      dateRangeConfig,
+      host,
+      plan,
+      period,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_statistics_manager - action: ${action}`);
+      log(`Running tool: stape_container_statistics - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
@@ -78,8 +67,8 @@ export const containerStatisticsActions = (
           case "get_statistics": {
             const queryParams: Record<string, string> = {};
 
-            if (statisticsConfig?.host) {
-              queryParams.host = statisticsConfig.host;
+            if (host) {
+              queryParams.host = host;
             }
 
             const response = await httpClient.get<ContainerUsageStatistics[]>(
@@ -95,24 +84,12 @@ export const containerStatisticsActions = (
           }
 
           case "get_statistics_by_day": {
-            const queryParams: Record<string, number> = {};
-
-            if (dateRangeConfig) {
-              if (dateRangeConfig.start !== undefined) {
-                queryParams.start = dateRangeConfig.start;
-              }
-              if (dateRangeConfig.end !== undefined) {
-                queryParams.end = dateRangeConfig.end;
-              }
-            }
-
             const response = await httpClient.get<
               ContainerUsageStatisticsByDayModel[]
             >(
               `/containers/${encodeURIComponent(identifier)}/statistics-by-day`,
               {
                 headers,
-                queryParams,
               },
             );
 
@@ -137,9 +114,19 @@ export const containerStatisticsActions = (
           }
 
           case "get_surcharges": {
+            const queryParams: Record<string, string> = {};
+
+            if (plan) {
+              queryParams.plan = plan;
+            }
+
+            if (period) {
+              queryParams.period = period;
+            }
+
             const response = await httpClient.get<ContainerSurchargesModel[]>(
               `/containers/${encodeURIComponent(identifier)}/surcharges`,
-              { headers },
+              { headers, queryParams },
             );
 
             return {

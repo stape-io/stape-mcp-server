@@ -12,7 +12,7 @@ export const containerSchedulesActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_schedules_actions",
+    "stape_container_schedules",
     "Comprehensive tool for managing container schedules. Supports getting all schedules and updating/replacing all schedules for a container. Use the 'action' parameter to specify the operation: 'get' or 'update'.",
     {
       action: z
@@ -42,7 +42,7 @@ export const containerSchedulesActions = (
       userWorkspaceIdentifier,
       schedulesConfig,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_schedules_manager - action: ${action}`);
+      log(`Running tool: stape_container_schedules - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
