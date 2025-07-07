@@ -13,7 +13,7 @@ export const containerAnalyticsActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_analytics_actions",
+    "stape_container_analytics",
     "Comprehensive tool for managing container analytics. Supports getting analytics info, browser analytics, client analytics, and enabling/disabling analytics. Use the 'action' parameter to specify the operation: 'get_info', 'get_browsers', 'get_clients', or 'update_enable'.",
     {
       action: z
@@ -61,7 +61,7 @@ export const containerAnalyticsActions = (
       dateRangeConfig,
       enableConfig,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_analytics_manager - action: ${action}`);
+      log(`Running tool: stape_container_analytics - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

@@ -11,7 +11,7 @@ export const domainsResourceActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_domains_resource_actions",
+    "stape_domains_resource",
     "Tool for retrieving domains-related resources and configurations. Use the 'type' parameter to specify which domains resource to retrieve.",
     {
       type: z
@@ -29,7 +29,7 @@ export const domainsResourceActions = (
         .describe("The unique user workspace identifier."),
     },
     async ({ type, userWorkspaceIdentifier }): Promise<CallToolResult> => {
-      log(`Running tool: domains_resource_manager - type: ${type}`);
+      log(`Running tool: stape_domains_resource - type: ${type}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

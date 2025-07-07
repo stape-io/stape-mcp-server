@@ -6,7 +6,6 @@ import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import {
   AnonymizerSchema,
   CookieKeeperSchema,
-  CustomLoaderSchema,
   PreviewHeaderConfigSchema,
   ProxyFilesSchema,
   ScheduleSchema,
@@ -18,9 +17,6 @@ const AnonymizerPayloadSchema = AnonymizerSchema.omit({
   isActive: true,
 });
 const CookieKeeperPayloadSchema = CookieKeeperSchema.omit({
-  isActive: true,
-});
-const CustomLoaderPayloadSchema = CustomLoaderSchema.omit({
   isActive: true,
 });
 const PreviewHeaderConfigPayloadSchema = PreviewHeaderConfigSchema.omit({
@@ -41,7 +37,7 @@ export const containerPowerUpsActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_power_ups_actions",
+    "stape_container_power_ups",
     "Tool for managing container power-ups. Use the 'powerUpType' parameter to specify which power-up to update, and provide the appropriate configuration options.",
     {
       powerUpType: z
@@ -76,9 +72,6 @@ export const containerPowerUpsActions = (
       cookieKeeperConfig: CookieKeeperPayloadSchema.optional().describe(
         "Configuration for cookie keeper power-up. Required when powerUpType is 'cookie_keeper'.",
       ),
-      customLoaderConfig: CustomLoaderPayloadSchema.optional().describe(
-        "Configuration for custom loader power-up. Required when powerUpType is 'custom_loader'.",
-      ),
       previewHeaderConfig: PreviewHeaderConfigPayloadSchema.optional().describe(
         "Configuration for preview header config power-up. Required when powerUpType is 'preview_header_config'.",
       ),
@@ -99,14 +92,13 @@ export const containerPowerUpsActions = (
       isActive,
       anonymizerConfig,
       cookieKeeperConfig,
-      customLoaderConfig,
       previewHeaderConfig,
       proxyFilesConfig,
       scheduleConfig,
       serviceAccountConfig,
     }): Promise<CallToolResult> => {
       log(
-        `Running tool: container_power_ups_manager - powerUpType: ${powerUpType}`,
+        `Running tool: stape_container_power_ups - powerUpType: ${powerUpType}`,
       );
 
       try {
@@ -144,10 +136,7 @@ export const containerPowerUpsActions = (
           }
           case "custom_loader": {
             endpoint = `/containers/${identifier}/power-ups/custom-loader`;
-            body = {
-              isActive,
-              ...(customLoaderConfig || {}),
-            };
+            body = { isActive };
             break;
           }
           case "geo_headers": {

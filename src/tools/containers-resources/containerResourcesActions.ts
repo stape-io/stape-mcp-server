@@ -2,7 +2,12 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { API_APP_STAPE_IO } from "../../constants/api";
+import { CodeSettingsScriptsModel } from "../../models/CodeSettingsScriptsModel";
+import { ContainerModel } from "../../models/ContainerModel";
+import { CustomDomainDnsRecordModel } from "../../models/CustomDomainDnsRecordModel";
 import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { PromoCodeModel } from "../../models/PromoCodeModel";
+import { IntegrationClickFormTypeSchema } from "../../schemas/IntegrationClickFormTypeSchema";
 import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const containerResourcesActions = (
@@ -10,7 +15,7 @@ export const containerResourcesActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_resources_actions",
+    "stape_container_resources",
     "Comprehensive tool for managing container resources. Supports getting code settings scripts, example domain records, last subscription promo code, and managing container reactivation and integration clicks. Use the 'action' parameter to specify the operation.",
     {
       action: z
@@ -29,17 +34,8 @@ export const containerResourcesActions = (
         .string()
         .optional()
         .describe("The unique user workspace identifier."),
-      integrationClickConfig: z
-        .object({
-          platform: z.string().describe("Platform for integration click."),
-          eventType: z.string().describe("Event type for integration click."),
-          eventData: z
-            .record(z.any())
-            .optional()
-            .describe("Event data for integration click."),
-        })
-        .optional()
-        .describe(
+      integrationClickConfig:
+        IntegrationClickFormTypeSchema.optional().describe(
           "Integration click configuration. Required when action is 'create_integration_click'.",
         ),
     },
@@ -49,7 +45,7 @@ export const containerResourcesActions = (
       userWorkspaceIdentifier,
       integrationClickConfig,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_resources_manager - action: ${action}`);
+      log(`Running tool: stape_container_resources - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
@@ -59,7 +55,7 @@ export const containerResourcesActions = (
 
         switch (action) {
           case "get_code_settings_scripts": {
-            const response = await httpClient.get<unknown>(
+            const response = await httpClient.get<CodeSettingsScriptsModel>(
               `/containers/${encodeURIComponent(identifier)}/code-settings-scripts`,
               { headers },
             );
@@ -72,7 +68,7 @@ export const containerResourcesActions = (
           }
 
           case "get_example_domain_records": {
-            const response = await httpClient.get<unknown>(
+            const response = await httpClient.get<CustomDomainDnsRecordModel[]>(
               `/containers/${encodeURIComponent(identifier)}/example-domain-records`,
               { headers },
             );
@@ -85,7 +81,7 @@ export const containerResourcesActions = (
           }
 
           case "get_last_subscription_promo_code": {
-            const response = await httpClient.get<unknown>(
+            const response = await httpClient.get<PromoCodeModel>(
               `/containers/${encodeURIComponent(identifier)}/last-subscription-promo-code`,
               { headers },
             );
@@ -98,7 +94,7 @@ export const containerResourcesActions = (
           }
 
           case "reactivate_container": {
-            const response = await httpClient.put<unknown>(
+            const response = await httpClient.put<ContainerModel>(
               `/containers/${encodeURIComponent(identifier)}/reactivate`,
               JSON.stringify({}),
               { headers },
@@ -121,9 +117,11 @@ export const containerResourcesActions = (
             const response = await httpClient.post<unknown>(
               `/containers/${encodeURIComponent(identifier)}/integration-click`,
               JSON.stringify({
-                platform: integrationClickConfig.platform,
-                eventType: integrationClickConfig.eventType,
-                eventData: integrationClickConfig.eventData,
+                integrationType:
+                  integrationClickConfig?.integrationType || null,
+                integrationName:
+                  integrationClickConfig?.integrationName || null,
+                buttonType: integrationClickConfig?.buttonType || null,
               }),
               { headers },
             );

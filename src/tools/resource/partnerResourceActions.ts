@@ -11,7 +11,7 @@ export const partnerResourceActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_partner_resource_actions",
+    "stape_partner_resource",
     "Tool for retrieving partner-related resources and configurations. Use the 'type' parameter to specify which partner resource to retrieve.",
     {
       type: z
@@ -35,7 +35,7 @@ export const partnerResourceActions = (
         .describe("The unique user workspace identifier."),
     },
     async ({ type, userWorkspaceIdentifier }): Promise<CallToolResult> => {
-      log(`Running tool: partner_resource_manager - type: ${type}`);
+      log(`Running tool: stape_partner_resource - type: ${type}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

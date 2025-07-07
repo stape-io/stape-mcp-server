@@ -11,7 +11,7 @@ export const billingResourceActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_billing_resource_actions",
+    "stape_billing_resource",
     "Tool for retrieving billing-related resources and configurations. Use the 'type' parameter to specify which billing resource to retrieve.",
     {
       type: z
@@ -29,7 +29,7 @@ export const billingResourceActions = (
         .describe("The unique user workspace identifier."),
     },
     async ({ type, userWorkspaceIdentifier }): Promise<CallToolResult> => {
-      log(`Running tool: billing_resource_manager - type: ${type}`);
+      log(`Running tool: stape_billing_resource - type: ${type}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

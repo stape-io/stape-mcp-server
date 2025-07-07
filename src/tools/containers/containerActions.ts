@@ -14,7 +14,7 @@ export const containerActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_crud_actions",
+    "stape_container_crud",
     "Tool for managing container CRUD operations. Use the 'action' parameter to specify the operation: 'create', 'get', 'get_all', 'update', or 'delete'.",
     {
       action: z
@@ -105,7 +105,7 @@ export const containerActions = (
       code,
       ...createOrUpdateConfig
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_crud_manager - action: ${action}`);
+      log(`Running tool: stape_container_crud - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);

@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { ContainerCookieKeeperFormType2Schema } from "./ContainerCookieKeeperFormType2Schema";
+import { ContainerProxyFileFormTypeSchema } from "./ContainerProxyFileFormTypeSchema";
+import { ContainerScheduleFormTypeSchema } from "./ContainerScheduleFormTypeSchema";
 
 // Define specific schemas for each power-up type
 export const AnonymizerSchema = z.object({
@@ -43,46 +46,37 @@ export const CookieKeeperSchema = z.object({
   isActive: z
     .boolean()
     .describe("Whether the cookie keeper power-up is active."),
-  platforms: z
-    .array(z.string())
-    .optional()
-    .describe("Cookie keeper platforms."),
-});
-
-export const CustomLoaderSchema = z.object({
-  isActive: z
-    .boolean()
-    .describe("Whether the custom loader power-up is active."),
-  customLoaderCode: z.string().optional().describe("Custom loader code."),
+  options: ContainerCookieKeeperFormType2Schema.optional().describe(
+    "Cookie keeper options.",
+  ),
 });
 
 export const PreviewHeaderConfigSchema = z.object({
   isActive: z
     .boolean()
     .describe("Whether the preview header config power-up is active."),
-  previewHeaderValue: z.string().optional().describe("Preview header value."),
+  options: z.string().optional().describe("Preview header config options."),
 });
 
 export const ProxyFilesSchema = z.object({
   isActive: z.boolean().describe("Whether the proxy files power-up is active."),
-  proxyFiles: z
-    .array(z.any())
+  options: z
+    .array(ContainerProxyFileFormTypeSchema)
     .optional()
     .describe("Proxy files configuration."),
 });
 
 export const ScheduleSchema = z.object({
   isActive: z.boolean().describe("Whether the schedule power-up is active."),
-  scheduleType: z.string().optional().describe("Schedule type."),
-  scheduleConfig: z.any().optional().describe("Schedule configuration."),
+  options: z
+    .array(ContainerScheduleFormTypeSchema)
+    .optional()
+    .describe("Array of schedule configuration objects."),
 });
 
 export const ServiceAccountSchema = z.object({
   isActive: z
     .boolean()
     .describe("Whether the service account power-up is active."),
-  serviceAccountCredentials: z
-    .string()
-    .optional()
-    .describe("Service account credentials."),
+  options: z.string().optional().describe("Service account power-up options."),
 });

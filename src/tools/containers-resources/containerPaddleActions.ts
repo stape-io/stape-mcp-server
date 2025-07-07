@@ -2,8 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import { API_APP_STAPE_IO } from "../../constants/api";
-import { ContainerSubscriptionChangePlanFormTypeSchema } from "../../models/ContainerSubscriptionChangePlanFormTypeSchema";
 import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
+import { ContainerSubscriptionChangePlanFormTypeSchema } from "../../schemas/ContainerSubscriptionChangePlanFormTypeSchema";
 import { createErrorResponse, HttpClient, log } from "../../utils";
 
 export const containerPaddleActions = (
@@ -11,7 +11,7 @@ export const containerPaddleActions = (
   { props }: McpAgentToolParamsModel,
 ): void => {
   server.tool(
-    "stape_container_paddle_actions",
+    "stape_container_paddle",
     "Comprehensive tool for managing Paddle transactions for containers. Supports creating Paddle transactions, completing transactions, getting payment method transactions, and retrying charges. Use the 'action' parameter to specify the operation.",
     {
       action: z
@@ -33,34 +33,14 @@ export const containerPaddleActions = (
         ContainerSubscriptionChangePlanFormTypeSchema.optional().describe(
           "Transaction configuration. Required when action is 'create_transaction'.",
         ),
-      completeTransactionsConfig: z
-        .object({
-          transactionIds: z
-            .array(z.string())
-            .describe("Array of transaction IDs to complete."),
-        })
-        .optional()
-        .describe(
-          "Complete transactions configuration. Required when action is 'complete_transactions'.",
-        ),
-      retryChargeConfig: z
-        .object({
-          transactionId: z.string().describe("Transaction ID to retry."),
-        })
-        .optional()
-        .describe(
-          "Retry charge configuration. Required when action is 'retry_charge'.",
-        ),
     },
     async ({
       action,
       identifier,
       userWorkspaceIdentifier,
       transactionConfig,
-      completeTransactionsConfig,
-      retryChargeConfig,
     }): Promise<CallToolResult> => {
-      log(`Running tool: container_paddle_manager - action: ${action}`);
+      log(`Running tool: stape_container_paddle - action: ${action}`);
 
       try {
         const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
@@ -90,17 +70,9 @@ export const containerPaddleActions = (
           }
 
           case "complete_transactions": {
-            if (!completeTransactionsConfig) {
-              throw new Error(
-                `completeTransactionsConfig is required for ${action} action`,
-              );
-            }
-
             const response = await httpClient.post<unknown>(
               `/containers/${encodeURIComponent(identifier)}/paddle/complete-transactions`,
-              JSON.stringify({
-                transactionIds: completeTransactionsConfig.transactionIds,
-              }),
+              undefined,
               { headers },
             );
 
@@ -125,17 +97,9 @@ export const containerPaddleActions = (
           }
 
           case "retry_charge": {
-            if (!retryChargeConfig) {
-              throw new Error(
-                `retryChargeConfig is required for ${action} action`,
-              );
-            }
-
             const response = await httpClient.post<unknown>(
               `/containers/${encodeURIComponent(identifier)}/retry-charge`,
-              JSON.stringify({
-                transactionId: retryChargeConfig.transactionId,
-              }),
+              undefined,
               { headers },
             );
 
