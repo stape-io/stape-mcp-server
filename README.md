@@ -19,7 +19,7 @@ Replace the content with the following configuration (make sure npx is installed
       "args": [
         "-y",
         "mcp-remote",
-        "https://mcp.stape.ai/sse",
+        "https://mcp.stape.ai/mcp",
         "--header",
         "Authorization: ${your_stape_api_key}"
       ]
