@@ -22,23 +22,46 @@ export class StapeMCPServer extends McpAgent<Env, State, McpAgentPropsModel> {
 
   async init() {
     tools.forEach((register) => {
+      // @ts-ignore
       register(this.server, { props: this.props, env: this.env });
     });
   }
 }
 
-app.mount("/", (req, env, ctx) => {
-  const apiKey = req.headers.get("authorization");
+app.mount(
+  "/sse",
+  (req, env, ctx) => {
+    const apiKey = req.headers.get("authorization");
 
-  if (!apiKey) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+    if (!apiKey) {
+      return new Response("Unauthorized", { status: 401 });
+    }
 
-  ctx.props = {
-    apiKey,
-  };
+    ctx.props = {
+      apiKey,
+    };
 
-  return StapeMCPServer.mount("/sse").fetch(req, env, ctx);
-});
+    return StapeMCPServer.serveSSE("/sse").fetch(req, env, ctx);
+  },
+  { replaceRequest: false },
+);
+
+app.mount(
+  "/mcp",
+  (req, env, ctx) => {
+    const apiKey = req.headers.get("authorization");
+
+    if (!apiKey) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    ctx.props = {
+      apiKey,
+    };
+
+    return StapeMCPServer.serve("/mcp").fetch(req, env, ctx);
+  },
+  { replaceRequest: false },
+);
 
 export default app;
