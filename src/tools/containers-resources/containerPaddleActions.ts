@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { API_APP_STAPE_IO } from "../../constants/api";
 import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerSubscriptionChangePlanFormTypeSchema } from "../../schemas/ContainerSubscriptionChangePlanFormTypeSchema";
 import { createErrorResponse, HttpClient, log } from "../../utils";
@@ -43,7 +42,7 @@ export const containerPaddleActions = (
       log(`Running tool: stape_container_paddle - action: ${action}`);
 
       try {
-        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
+        const httpClient = new HttpClient(props.apiBaseUrl, props.apiKey);
         const headers = userWorkspaceIdentifier
           ? { "X-WORKSPACE": userWorkspaceIdentifier }
           : undefined;

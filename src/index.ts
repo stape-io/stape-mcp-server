@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 import { Hono } from "hono";
+import { API_APP_EU_STAPE_IO, API_APP_STAPE_IO } from "./constants/api";
 import { McpAgentPropsModel } from "./models/McpAgentModel";
 import { tools } from "./tools";
 import { getPackageVersion } from "./utils";
@@ -37,8 +38,14 @@ app.mount(
       return new Response("Unauthorized", { status: 401 });
     }
 
+    const regionHeader = req.headers.get("X-Stape-Region");
+    const isEU = regionHeader?.toUpperCase() === "EU";
+
+    const apiBaseUrl = isEU ? API_APP_EU_STAPE_IO : API_APP_STAPE_IO;
+
     ctx.props = {
       apiKey,
+      apiBaseUrl,
     };
 
     return StapeMCPServer.serveSSE("/sse").fetch(req, env, ctx);
@@ -55,8 +62,14 @@ app.mount(
       return new Response("Unauthorized", { status: 401 });
     }
 
+    const regionHeader = req.headers.get("X-Stape-Region");
+    const isEU = regionHeader?.toUpperCase() === "EU";
+
+    const apiBaseUrl = isEU ? API_APP_EU_STAPE_IO : API_APP_STAPE_IO;
+
     ctx.props = {
       apiKey,
+      apiBaseUrl,
     };
 
     return StapeMCPServer.serve("/mcp").fetch(req, env, ctx);

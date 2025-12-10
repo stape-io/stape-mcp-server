@@ -28,6 +28,29 @@ Replace the content with the following configuration (make sure npx is installed
 }
 ```
 
+## EU Endpoint Support
+
+If you are using Stape EU environment, you need to provide an additional header `X-Stape-Region: EU`.
+
+```json
+{
+  "mcpServers": {
+    "stape-mcp-server-eu": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.stape.ai/mcp",
+        "--header",
+        "Authorization: ${your_stape_api_key}",
+        "--header",
+        "X-Stape-Region: EU"
+      ]
+    }
+  }
+}
+```
+
 ### Troubleshooting
 
 **MCP Server Name Length Limit**

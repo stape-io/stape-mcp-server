@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerDomainModel } from "../../models/ContainerDomainModel";
 import { EntriAuthorizationResultModel } from "../../models/EntriAuthorizationResultModel";
 import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
@@ -84,7 +83,7 @@ export const containerDomainActions = (
       );
 
       try {
-        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
+        const httpClient = new HttpClient(props.apiBaseUrl, props.apiKey);
         const headers = userWorkspaceIdentifier
           ? { "X-WORKSPACE": userWorkspaceIdentifier }
           : undefined;
