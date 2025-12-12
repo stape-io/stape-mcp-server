@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { API_APP_STAPE_IO } from "../../constants/api";
 import { CodeSettingsScriptsModel } from "../../models/CodeSettingsScriptsModel";
 import { ContainerModel } from "../../models/ContainerModel";
 import { CustomDomainDnsRecordModel } from "../../models/CustomDomainDnsRecordModel";
@@ -48,7 +47,7 @@ export const containerResourcesActions = (
       log(`Running tool: stape_container_resources - action: ${action}`);
 
       try {
-        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
+        const httpClient = new HttpClient(props.apiBaseUrl, props.apiKey);
         const headers = userWorkspaceIdentifier
           ? { "X-WORKSPACE": userWorkspaceIdentifier }
           : undefined;

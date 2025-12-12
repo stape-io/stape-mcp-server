@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { API_APP_STAPE_IO } from "../../constants/api";
 import { ContainerProxyFile } from "../../models/ContainerProxyFileFormTypeModel";
 import { McpAgentToolParamsModel } from "../../models/McpAgentModel";
 import { ContainerProxyFilesConfigSchema } from "../../schemas/ContainerProxyFilesCrudSchemas";
@@ -38,7 +37,7 @@ export const containerProxyFilesActions = (
       log(`Running tool: stape_container_proxy_files - action: ${action}`);
 
       try {
-        const httpClient = new HttpClient(API_APP_STAPE_IO, props.apiKey);
+        const httpClient = new HttpClient(props.apiBaseUrl, props.apiKey);
         const headers = userWorkspaceIdentifier
           ? { "X-WORKSPACE": userWorkspaceIdentifier }
           : undefined;

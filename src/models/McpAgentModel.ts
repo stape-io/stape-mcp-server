@@ -1,5 +1,6 @@
 export type McpAgentPropsModel = {
   apiKey: string;
+  apiBaseUrl: string;
 };
 
 export type McpAgentToolParamsModel = {
