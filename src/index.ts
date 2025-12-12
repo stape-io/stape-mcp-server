@@ -16,9 +16,7 @@ export class StapeMCPServer extends McpAgent<Env, State, McpAgentPropsModel> {
   server = new McpServer({
     name: "stape-mcp-server",
     version: getPackageVersion(),
-    protocolVersion: "1.0",
-    vendor: "stape-io",
-    homepage: "https://github.com/stape-io/stape-mcp-server",
+    websiteUrl: "https://github.com/stape-io/stape-mcp-server",
   });
 
   async init() {
