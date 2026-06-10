@@ -34,5 +34,75 @@
       "pattern": "mcp.stape.ai",
       "custom_domain": true
     }
-  ]
+  ],
+  "env": {
+    "dev": {
+      "name": "stape-mcp-server-dev",
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "StapeMCPServer",
+            "name": "MCP_OBJECT"
+          }
+        ]
+      },
+      "routes": [
+        {
+          "pattern": "mcp.stape.dev",
+          "custom_domain": true
+        }
+      ]
+    },
+    "sh": {
+      "name": "stape-mcp-server-sh",
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "StapeMCPServer",
+            "name": "MCP_OBJECT"
+          }
+        ]
+      },
+      "routes": [
+        {
+          "pattern": "mcp.stape.sh",
+          "custom_domain": true
+        }
+      ]
+    },
+    "qa": {
+      "name": "stape-mcp-server-qa",
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "StapeMCPServer",
+            "name": "MCP_OBJECT"
+          }
+        ]
+      },
+      "routes": [
+        {
+          "pattern": "mcp.stape.qa",
+          "custom_domain": true
+        }
+      ]
+    },
+    "re": {
+      "name": "stape-mcp-server-re",
+      "durable_objects": {
+        "bindings": [
+          {
+            "class_name": "StapeMCPServer",
+            "name": "MCP_OBJECT"
+          }
+        ]
+      },
+      "routes": [
+        {
+          "pattern": "mcp.stape.re",
+          "custom_domain": true
+        }
+      ]
+    }
+  }
 }
