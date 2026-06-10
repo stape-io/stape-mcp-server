@@ -1,0 +1,38 @@
+name: Deploy to Non-production
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'The environment to deploy to:'
+        options:
+          - dev
+          - sh
+          - qa
+          - re
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v6
+
+      - name: "Setup node"
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: "Install dependencies"
+        run: npm ci
+
+      - name: "Build"
+        run: npm run build
+
+      - name: "Deploy to Cloudflare"
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_DEV }}
+          command: deploy --env ${{ inputs.environment }}
