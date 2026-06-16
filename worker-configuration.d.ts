@@ -8,6 +8,8 @@ declare namespace Cloudflare {
 }
 
 interface Env extends Cloudflare.Env {
+  API_APP_GLOBAL_URL: string;
+  API_APP_EU_URL: string;
 }
 
 // Begin runtime types

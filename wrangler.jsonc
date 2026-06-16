@@ -29,6 +29,10 @@
   "observability": {
     "enabled": true
   },
+  "vars": {
+    "API_APP_GLOBAL_URL": "https://api.app.stape.io/api/v2",
+    "API_APP_EU_URL": "https://api.app.eu.stape.io/api/v2"
+  },
   "routes": [
     {
       "pattern": "mcp.stape.ai",
