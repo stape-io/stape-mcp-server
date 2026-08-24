@@ -27,7 +27,7 @@
     ]
   },
   "observability": {
-    "enabled": true
+    "enabled": false
   },
   "vars": {
     "API_APP_GLOBAL_URL": "https://api.app.stape.io/api/v2",
