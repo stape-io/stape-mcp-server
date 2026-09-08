@@ -10,6 +10,7 @@ This project implements an **MCP (Model Context Protocol) server** for the **Sta
 - [EU Endpoint Support](#eu-endpoint-support)
 - [Available tools](#available-tools)
 - [Troubleshooting](#troubleshooting)
+- [Useful resources](#useful-resources)
 - [Open Source](#open-source)
 
 ## API Documentation
@@ -249,6 +250,10 @@ To avoid this issue:
 ```
 rm -rf ~/.mcp-auth
 ```
+
+## Useful resources
+
+- [Step-by-step guide: Stape MCP Server configuration](https://stape.io/blog/stape-mcp-server-configuration)
 
 ## Open Source
 
