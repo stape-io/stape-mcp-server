@@ -31,6 +31,9 @@ Using the Stape EU environment? Every config below needs one extra header — se
 
 ### Claude Desktop
 
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
+
 Add this to your `claude_desktop_config.json` (Settings → Developer → Edit Config):
 
 ```json
@@ -50,7 +53,12 @@ Add this to your `claude_desktop_config.json` (Settings → Developer → Edit C
 }
 ```
 
+</details>
+
 ### Claude Code
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 ```bash
 claude mcp add --transport http stape-mcp-server https://mcp.stape.ai/mcp \
@@ -59,7 +67,12 @@ claude mcp add --transport http stape-mcp-server https://mcp.stape.ai/mcp \
 
 This writes the same server entry into `.mcp.json` / your Claude Code MCP config. Run `/mcp` inside Claude Code to confirm it connected.
 
+</details>
+
 ### VS Code
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 VS Code's MCP client supports HTTP servers natively, no `mcp-remote` needed. Add this to `.vscode/mcp.json`:
 
@@ -77,7 +90,12 @@ VS Code's MCP client supports HTTP servers natively, no `mcp-remote` needed. Add
 }
 ```
 
+</details>
+
 ### Copilot CLI
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 ```bash
 copilot mcp add --transport http stape-mcp-server https://mcp.stape.ai/mcp \
@@ -86,11 +104,21 @@ copilot mcp add --transport http stape-mcp-server https://mcp.stape.ai/mcp \
 
 This writes the server entry into `~/.copilot/mcp-config.json`. See [GitHub's docs](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers#using-the-copilot-mcp-add-subcommand) for more on the `copilot mcp add` subcommand.
 
+</details>
+
 ### GitHub Copilot
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 GitHub Copilot Chat in VS Code uses VS Code's own MCP client, so it reads the same `.vscode/mcp.json` file — see [VS Code](#vs-code) above. No separate configuration is needed.
 
+</details>
+
 ### Cursor
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mcp.json` (project-level) or `~/.cursor/mcp.json` (global — Settings → MCP → Add new global MCP server):
 
@@ -107,7 +135,12 @@ Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mc
 }
 ```
 
+</details>
+
 ### Antigravity
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add this to `~/.gemini/config/mcp_config.json` (global) or `.agents/mcp_config.json` (workspace-local) — accessible from the editor's agent panel via **… → MCP Servers → Manage MCP Servers → View raw config**:
 
@@ -124,13 +157,23 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 }
 ```
 
+</details>
+
 ### ChatGPT
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 1. In ChatGPT, enable Developer mode: Settings → Apps & Connectors → Advanced settings → Developer mode.
 2. Go to Settings → Connectors → Create, and set the server URL to `https://mcp.stape.ai/mcp`.
 3. Authenticate with your Stape API key. ChatGPT's connector UI is OAuth-first and support for a raw `Authorization` header varies by rollout — if there's no field for it, use one of the other clients above instead.
 
+</details>
+
 ### Other MCP clients
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
 
 Any other MCP-compatible client that expects a stdio-style `command`/`args` config can use the same `mcp-remote` block:
 
@@ -150,6 +193,8 @@ Any other MCP-compatible client that expects a stdio-style `command`/`args` conf
   }
 }
 ```
+
+</details>
 
 ## EU Endpoint Support
 
