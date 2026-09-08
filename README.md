@@ -244,7 +244,7 @@ To avoid this issue:
 
 **Clearing MCP Cache**
 
-[mcp-remote](https://github.com/geelen/mcp-remote#readme) stores all the credential information inside ~/.mcp-auth (or wherever your MCP_REMOTE_CONFIG_DIR points to). If you're having persistent issues, clear it and restart your MCP client:
+[mcp-remote](https://github.com/geelen/mcp-remote#readme) stores all the credential information inside `~/.mcp-auth` (or wherever your `MCP_REMOTE_CONFIG_DIR` points to). If you're having persistent issues, clear it and restart your MCP client:
 
 ```
 rm -rf ~/.mcp-auth
