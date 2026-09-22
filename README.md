@@ -254,7 +254,3 @@ rm -rf ~/.mcp-auth
 ## Useful resources
 
 - [Step-by-step guide: Stape MCP Server configuration](https://stape.io/blog/stape-mcp-server-configuration)
-
-## Open Source
-
-The **Stape MCP Server** is developed and maintained by [Stape Team](https://stape.io/) under the Apache 2.0 license.
