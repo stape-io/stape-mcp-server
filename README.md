@@ -11,7 +11,6 @@ This project implements an **MCP (Model Context Protocol) server** for the **Sta
 - [Available tools](#available-tools)
 - [Troubleshooting](#troubleshooting)
 - [Useful resources](#useful-resources)
-- [Open Source](#open-source)
 
 ## API Documentation
 
@@ -20,15 +19,17 @@ The server wraps the Stape REST API. Full endpoint reference:
 - EU: https://api.app.eu.stape.io/api/doc
 
 ## Prerequisites
-- Node.js (v18 or higher)
+- Node.js (v20 or higher)
 
 ## Installation
 
 The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.ai/mcp`. Most clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge that lets stdio-only clients talk to a remote HTTP MCP server; a few clients (VS Code, Cursor, Antigravity) speak HTTP directly.
 
+> A legacy `/sse` endpoint also exists for backward compatibility with older SSE-based MCP clients. It isn't part of any config below — use `/mcp` for new integrations.
+
 Get a Stape API key from your Stape account and use it instead of `${your_stape_api_key}` below ([learn how](https://stape.io/helpdesk/documentation/stape-api#how-to-use-stape-api)). Restart the client after changing its config.
 
-Using the Stape EU environment? Every config below needs one extra header — see [EU Endpoint Support](#eu-endpoint-support).
+Using the Stape EU environment? Every config below needs one extra header, or `?region=eu` on the URL for clients without custom headers — see [EU Endpoint Support](#eu-endpoint-support).
 
 ### Claude Desktop
 
@@ -171,6 +172,20 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 
 </details>
 
+### Lovable
+
+<details>
+<summary>⬇️ Click to expand ⬇️</summary>
+
+1. In Lovable, go to **Connectors**, select **+** in the top right, then choose **MCP server**.
+2. Set **Server name** to `Stape` and **Server URL** to `https://mcp.stape.ai/mcp`.
+3. Under authentication, choose **Bearer token or API key** (not the default OAuth) and paste your Stape API key.
+4. Select **Add server**.
+
+Lovable can't send custom headers, so EU accounts use `https://mcp.stape.ai/mcp?region=eu` as the server URL instead of the `X-Stape-Region` header. The connection is personal (teammates add their own) and works in the project chat and Chats, not in your published app. See [Lovable's docs](https://docs.lovable.dev/integrations/custom-mcp) for more.
+
+</details>
+
 ### Other MCP clients
 
 <details>
@@ -199,38 +214,66 @@ Any other MCP-compatible client that expects a stdio-style `command`/`args` conf
 
 ## EU Endpoint Support
 
-If you are using Stape EU environment, you need to provide an additional header `X-Stape-Region: EU`.
+If your Stape account is on the EU environment, the server needs to know so it calls the EU API. Take the config for your client from [Installation](#installation) and add **one** of the following:
 
-```json
-{
-  "mcpServers": {
-    "stape-mcp-server-eu": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://mcp.stape.ai/mcp",
-        "--header",
-        "Authorization: ${your_stape_api_key}",
-        "--header",
-        "X-Stape-Region: EU"
-      ]
-    }
+| Option | Use it when |
+|---|---|
+| `X-Stape-Region: EU` header | Your client lets you set headers (Claude Desktop, Claude Code, VS Code, Cursor, Antigravity, Copilot CLI, `mcp-remote`) |
+| `?region=eu` on the server URL | Your client only takes a URL and a key (Lovable, ChatGPT) |
+
+If both are present, the header wins. Without either, requests go to the global API and an EU API key is rejected with `401 Unauthorized`.
+
+### Header
+
+Add it next to `Authorization`, in the same format your config already uses:
+
+- **`mcp-remote` configs** (Claude Desktop, other clients): two more entries in `args`:
+  ```json
+  "--header",
+  "X-Stape-Region: EU"
+  ```
+- **JSON `headers` configs** (VS Code, Cursor, Antigravity): one more key:
+  ```json
+  "headers": {
+    "Authorization": "${your_stape_api_key}",
+    "X-Stape-Region": "EU"
   }
-}
+  ```
+- **CLI** (Claude Code, Copilot CLI): one more flag:
+  ```bash
+  --header "X-Stape-Region: EU"
+  ```
+
+### URL
+
+Use this as the server URL instead of `https://mcp.stape.ai/mcp`:
+
+```
+https://mcp.stape.ai/mcp?region=eu
 ```
 
 ## Available tools
 
 Each tool takes an `action` parameter selecting the operation (`list`, `get`, `create`, `update`, `delete`, …). Destructive actions additionally require `confirm: true`.
 
+Tools that mix reads with destructive or state-changing actions are split into a
+`_read` tool (safe, read-only actions) and a `_write` tool (create/update/delete
+actions); tools that were already all-read or already carried non-destructive
+writes only are left as a single tool. The exceptions are
+`stape_container_proxy_files` and `stape_container_schedules`: their `update`
+replaces the whole collection (omitted entries are removed);
+`stape_container_power_ups`: its `proxy_files` and `schedule` updates do the
+same; and `stape_container_subscription`: it can transfer a container to a new
+owner or cancel its subscription. All four are annotated
+`destructiveHint: true` and not yet split.
+
 | Area | Tools |
 | --- | --- |
-| Containers | `stape_container_crud`, `stape_container_lifecycle`, `stape_container_domains`, `stape_container_schedules`, `stape_container_power_ups`, `stape_container_proxy_files`, `stape_container_connections`, `stape_container_resources` |
-| Monitoring & logs | `stape_container_monitoring`, `stape_container_monitoring_logs`, `stape_container_logs`, `stape_container_analytics`, `stape_container_statistics` |
-| Billing | `stape_billing`, `stape_consolidated_invoicing`, `stape_invoices`, `stape_payment_links`, `stape_subscriptions`, `stape_container_subscription`, `stape_container_paddle` |
-| Account & access | `stape_account`, `stape_users`, `stape_user_api_keys`, `stape_company`, `stape_share_access` |
-| Partners | `stape_partner`, `stape_partner_payouts` |
+| Containers | `stape_container_read`, `stape_container_write`, `stape_container_lifecycle`, `stape_container_domains_read`, `stape_container_domains_write`, `stape_container_schedules`, `stape_container_power_ups`, `stape_container_proxy_files`, `stape_container_connections_read`, `stape_container_connections_write`, `stape_container_resources` |
+| Monitoring & logs | `stape_container_monitoring_read`, `stape_container_monitoring_write`, `stape_container_monitoring_logs`, `stape_container_logs_read`, `stape_container_logs_write`, `stape_container_analytics`, `stape_container_statistics` |
+| Billing | `stape_billing`, `stape_consolidated_invoicing_read`, `stape_consolidated_invoicing_write`, `stape_invoices`, `stape_payment_links_read`, `stape_payment_links_write`, `stape_subscriptions`, `stape_container_subscription`, `stape_container_paddle` |
+| Account & access | `stape_account_read`, `stape_account_write`, `stape_users_read`, `stape_users_write`, `stape_user_api_keys_read`, `stape_user_api_keys_write`, `stape_company_read`, `stape_company_write`, `stape_share_access_read`, `stape_share_access_write` |
+| Partners | `stape_partner`, `stape_partner_payouts_read`, `stape_partner_payouts_write` |
 | Stape Score | `stape_score_report` — scan a website's tracking setup with Stape Score (create a scan, fetch results) |
 | Reference data | `stape_container_resource`, `stape_domains_resource`, `stape_gateway_resource`, `stape_logs_resource`, `stape_monitoring_resource`, `stape_billing_resource`, `stape_partner_resource`, `stape_products`, `stape_calculator` |
 
