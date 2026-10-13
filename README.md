@@ -23,7 +23,7 @@ The server wraps the Stape REST API. Full endpoint reference:
 
 ## Installation
 
-The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.ai/mcp`. Most clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge that lets stdio-only clients talk to a remote HTTP MCP server; a few clients (VS Code, Cursor, Antigravity) speak HTTP directly.
+The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.io/mcp`. Most clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge that lets stdio-only clients talk to a remote HTTP MCP server; a few clients (VS Code, Cursor, Antigravity) speak HTTP directly.
 
 > A legacy `/sse` endpoint also exists for backward compatibility with older SSE-based MCP clients. It isn't part of any config below — use `/mcp` for new integrations.
 
@@ -46,7 +46,7 @@ Add this to your `claude_desktop_config.json` (Settings → Developer → Edit C
       "args": [
         "-y",
         "mcp-remote",
-        "https://mcp.stape.ai/mcp",
+        "https://mcp.stape.io/mcp",
         "--header",
         "Authorization: ${your_stape_api_key}"
       ]
@@ -63,7 +63,7 @@ Add this to your `claude_desktop_config.json` (Settings → Developer → Edit C
 <summary>⬇️ Click to expand ⬇️</summary>
 
 ```bash
-claude mcp add --transport http stape-mcp-server https://mcp.stape.ai/mcp \
+claude mcp add --transport http stape-mcp-server https://mcp.stape.io/mcp \
   --header "Authorization: ${your_stape_api_key}"
 ```
 
@@ -83,7 +83,7 @@ VS Code's MCP client supports HTTP servers natively, no `mcp-remote` needed. Add
   "servers": {
     "stape-mcp-server": {
       "type": "http",
-      "url": "https://mcp.stape.ai/mcp",
+      "url": "https://mcp.stape.io/mcp",
       "headers": {
         "Authorization": "${your_stape_api_key}"
       }
@@ -100,7 +100,7 @@ VS Code's MCP client supports HTTP servers natively, no `mcp-remote` needed. Add
 <summary>⬇️ Click to expand ⬇️</summary>
 
 ```bash
-copilot mcp add --transport http stape-mcp-server https://mcp.stape.ai/mcp \
+copilot mcp add --transport http stape-mcp-server https://mcp.stape.io/mcp \
   --header "Authorization: ${your_stape_api_key}"
 ```
 
@@ -128,7 +128,7 @@ Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mc
 {
   "mcpServers": {
     "stape-mcp-server": {
-      "url": "https://mcp.stape.ai/mcp",
+      "url": "https://mcp.stape.io/mcp",
       "headers": {
         "Authorization": "${your_stape_api_key}"
       }
@@ -150,7 +150,7 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 {
   "mcpServers": {
     "stape-mcp-server": {
-      "serverUrl": "https://mcp.stape.ai/mcp",
+      "serverUrl": "https://mcp.stape.io/mcp",
       "headers": {
         "Authorization": "${your_stape_api_key}"
       }
@@ -167,7 +167,7 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 <summary>⬇️ Click to expand ⬇️</summary>
 
 1. In ChatGPT, enable Developer mode: Settings → Apps & Connectors → Advanced settings → Developer mode.
-2. Go to Settings → Connectors → Create, and set the server URL to `https://mcp.stape.ai/mcp`.
+2. Go to Settings → Connectors → Create, and set the server URL to `https://mcp.stape.io/mcp`.
 3. Authenticate with your Stape API key. ChatGPT's connector UI is OAuth-first and support for a raw `Authorization` header varies by rollout — if there's no field for it, use one of the other clients above instead.
 
 </details>
@@ -178,11 +178,11 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 <summary>⬇️ Click to expand ⬇️</summary>
 
 1. In Lovable, go to **Connectors**, select **+** in the top right, then choose **MCP server**.
-2. Set **Server name** to `Stape` and **Server URL** to `https://mcp.stape.ai/mcp`.
+2. Set **Server name** to `Stape` and **Server URL** to `https://mcp.stape.io/mcp`.
 3. Under authentication, choose **Bearer token or API key** (not the default OAuth) and paste your Stape API key.
 4. Select **Add server**.
 
-Lovable can't send custom headers, so EU accounts use `https://mcp.stape.ai/mcp?region=eu` as the server URL instead of the `X-Stape-Region` header. The connection is personal (teammates add their own) and works in the project chat and Chats, not in your published app. See [Lovable's docs](https://docs.lovable.dev/integrations/custom-mcp) for more.
+Lovable can't send custom headers, so EU accounts use `https://mcp.stape.io/mcp?region=eu` as the server URL instead of the `X-Stape-Region` header. The connection is personal (teammates add their own) and works in the project chat and Chats, not in your published app. See [Lovable's docs](https://docs.lovable.dev/integrations/custom-mcp) for more.
 
 </details>
 
@@ -201,7 +201,7 @@ Any other MCP-compatible client that expects a stdio-style `command`/`args` conf
       "args": [
         "-y",
         "mcp-remote",
-        "https://mcp.stape.ai/mcp",
+        "https://mcp.stape.io/mcp",
         "--header",
         "Authorization: ${your_stape_api_key}"
       ]
@@ -246,10 +246,10 @@ Add it next to `Authorization`, in the same format your config already uses:
 
 ### URL
 
-Use this as the server URL instead of `https://mcp.stape.ai/mcp`:
+Use this as the server URL instead of `https://mcp.stape.io/mcp`:
 
 ```
-https://mcp.stape.ai/mcp?region=eu
+https://mcp.stape.io/mcp?region=eu
 ```
 
 ## Available tools
