@@ -137,7 +137,7 @@ EU accounts: add `--header "X-Stape-Region: EU"`.
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-GitHub Copilot Chat in VS Code uses VS Code's own MCP client, so it reads the same `.vscode/mcp.json` file — see [VS Code](#vs-code) above. No separate configuration is needed.
+GitHub Copilot Chat in VS Code uses VS Code's own MCP client, so it reads the same `.vscode/mcp.json` file — see [VS Code](#vs-code) above, including its EU change. No separate configuration is needed.
 
 </details>
 
