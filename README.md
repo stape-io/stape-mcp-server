@@ -23,20 +23,28 @@ The server wraps the Stape REST API. Full endpoint reference:
 
 ## Installation
 
-The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.io/mcp`. Clients that speak HTTP directly (Claude Code, VS Code, Copilot CLI, Cursor, Antigravity, ChatGPT, Lovable) connect to it as is; stdio-only clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge to remote HTTP MCP servers.
+The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.io/mcp`. Clients that speak HTTP directly (Claude Code, VS Code, Copilot CLI, Cursor, Antigravity, Lovable, and Claude Desktop's custom connectors where request headers are available) connect to it as is; stdio-only clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge to remote HTTP MCP servers.
 
 > A legacy `/sse` endpoint also exists for backward compatibility with older SSE-based MCP clients. It isn't part of any config below — use `/mcp` for new integrations.
 
 Get a Stape API key from your Stape account and use it instead of `${your_stape_api_key}` below ([learn how](https://stape.io/helpdesk/documentation/stape-api#how-to-use-stape-api)). Restart the client after changing its config.
 
-Using the Stape EU environment? Every config below needs one extra header, or `?region=eu` on the URL for clients without custom headers — see [EU Endpoint Support](#eu-endpoint-support).
+Using the Stape EU environment? Each client below ends with the one change EU accounts need — see [EU Endpoint Support](#eu-endpoint-support) for why.
 
 ### Claude Desktop
 
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-Add this to your `claude_desktop_config.json` (Settings → Developer → Edit Config):
+**Custom connector (HTTP direct).** If your **Add custom connector** dialog has a **Request headers** section (in beta, [not available to every organization yet](https://claude.com/docs/connectors/custom/add-unlisted#authenticate-with-request-headers)):
+
+1. Go to **Customize → Connectors → Add custom connector**. On Team and Enterprise plans, an Owner adds it under **Organization settings → Connectors** instead, and every member then uses the key the Owner entered.
+2. Set the URL to `https://mcp.stape.io/mcp` and **Authentication** to **No sign-in**.
+3. Under **Request headers**, add `authorization` with your Stape API key as the value, mark it **Required**, and select **Add**.
+
+The connector also works on claude.ai. EU accounts use `https://mcp.stape.io/mcp?region=eu` as the URL.
+
+**`mcp-remote`.** Without **Request headers**, add this to your `claude_desktop_config.json` (Settings → Developer → Edit Config):
 
 ```json
 {
@@ -55,6 +63,8 @@ Add this to your `claude_desktop_config.json` (Settings → Developer → Edit C
 }
 ```
 
+EU accounts: add `"--header", "X-Stape-Region: EU"` to `args`.
+
 </details>
 
 ### Claude Code
@@ -67,7 +77,9 @@ claude mcp add --transport http stape-mcp-server https://mcp.stape.io/mcp \
   --header "Authorization: ${your_stape_api_key}"
 ```
 
-This writes the same server entry into `.mcp.json` / your Claude Code MCP config. Run `/mcp` inside Claude Code to confirm it connected.
+This adds the server to the current project only. Add `--scope user` to use it in every project, or `--scope project` to write it to the project's `.mcp.json` (avoid that one if the file is committed, since it holds your key). Run `claude mcp list` or `/mcp` inside Claude Code to confirm it connected.
+
+EU accounts: add `--header "X-Stape-Region: EU"`.
 
 </details>
 
@@ -76,21 +88,31 @@ This writes the same server entry into `.mcp.json` / your Claude Code MCP config
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-VS Code's MCP client supports HTTP servers natively, no `mcp-remote` needed. Add this to `.vscode/mcp.json`:
+VS Code's MCP client supports HTTP servers natively, no `mcp-remote` needed. Add this to `.vscode/mcp.json` (this workspace) or to the file **MCP: Open User Configuration** opens (every workspace). VS Code asks for the API key the first time the server starts and stores it, so the key never lands in the file:
 
 ```json
 {
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "stape-api-key",
+      "description": "Stape API key",
+      "password": true
+    }
+  ],
   "servers": {
     "stape-mcp-server": {
       "type": "http",
       "url": "https://mcp.stape.io/mcp",
       "headers": {
-        "Authorization": "${your_stape_api_key}"
+        "Authorization": "${input:stape-api-key}"
       }
     }
   }
 }
 ```
+
+EU accounts: add `"X-Stape-Region": "EU"` to `headers`.
 
 </details>
 
@@ -104,7 +126,9 @@ copilot mcp add --transport http stape-mcp-server https://mcp.stape.io/mcp \
   --header "Authorization: ${your_stape_api_key}"
 ```
 
-This writes the server entry into `~/.copilot/mcp-config.json`. See [GitHub's docs](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers#using-the-copilot-mcp-add-subcommand) for more on the `copilot mcp add` subcommand.
+This writes the server entry into `~/.copilot/mcp-config.json`, and it's available right away. Run `copilot mcp get stape-mcp-server` to confirm it connected. Inside an interactive session, `/mcp add` does the same through a form. See [GitHub's docs](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers#using-the-copilot-mcp-add-subcommand) for more.
+
+EU accounts: add `--header "X-Stape-Region: EU"`.
 
 </details>
 
@@ -122,7 +146,7 @@ GitHub Copilot Chat in VS Code uses VS Code's own MCP client, so it reads the sa
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mcp.json` (project-level) or `~/.cursor/mcp.json` (global — Settings → MCP → Add new global MCP server):
+Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mcp.json` (this project) or `~/.cursor/mcp.json` (every project):
 
 ```json
 {
@@ -137,6 +161,10 @@ Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mc
 }
 ```
 
+To keep the key out of the file, set `"Authorization": "${env:STAPE_API_KEY}"` and export `STAPE_API_KEY` in your shell profile. Manage the server from **Customize** in Cursor's sidebar.
+
+EU accounts: add `"X-Stape-Region": "EU"` to `headers`.
+
 </details>
 
 ### Antigravity
@@ -144,7 +172,7 @@ Cursor speaks HTTP directly too, no `mcp-remote` needed. Add this to `.cursor/mc
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add this to `~/.gemini/config/mcp_config.json` (global) or `.agents/mcp_config.json` (workspace-local) — accessible from the editor's agent panel via **… → MCP Servers → Manage MCP Servers → View raw config**:
+Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add this to `~/.gemini/config/mcp_config.json`, which the Antigravity editor and CLI share. In the editor, open it from the agent panel via **… → MCP Servers → Manage MCP Servers → View raw config**:
 
 ```json
 {
@@ -159,6 +187,8 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 }
 ```
 
+EU accounts: add `"X-Stape-Region": "EU"` to `headers`.
+
 </details>
 
 ### ChatGPT
@@ -166,11 +196,7 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-1. In ChatGPT, enable Developer mode: Settings → Apps & Connectors → Advanced settings → Developer mode.
-2. Go to Settings → Connectors → Create, and set the server URL to `https://mcp.stape.io/mcp`.
-3. Authenticate with your Stape API key. ChatGPT's connector UI is OAuth-first and support for a raw `Authorization` header varies by rollout — if there's no field for it, use one of the other clients above instead.
-
-EU accounts use `https://mcp.stape.io/mcp?region=eu` as the server URL — see [EU Endpoint Support](#eu-endpoint-support).
+ChatGPT can't connect to the Stape MCP Server yet. Its custom MCP servers (**Plugins → + → Add custom MCP server**) accept only OAuth or no authentication ([OpenAI's docs](https://developers.openai.com/api/docs/guides/custom-mcp-server)), and the Stape MCP Server authenticates with an API key. Use one of the other clients in the meantime.
 
 </details>
 
@@ -193,7 +219,7 @@ Lovable can't send custom headers, so EU accounts use `https://mcp.stape.io/mcp?
 <details>
 <summary>⬇️ Click to expand ⬇️</summary>
 
-Any other MCP-compatible client that expects a stdio-style `command`/`args` config can use the same `mcp-remote` block:
+If your client supports remote HTTP MCP servers with custom headers, point it at `https://mcp.stape.io/mcp` with an `Authorization` header holding your Stape API key, as in the [Cursor](#cursor) config. Otherwise, use `mcp-remote`:
 
 ```json
 {
@@ -212,47 +238,20 @@ Any other MCP-compatible client that expects a stdio-style `command`/`args` conf
 }
 ```
 
+EU accounts: send the `X-Stape-Region: EU` header (with `mcp-remote`, add `"--header", "X-Stape-Region: EU"` to `args`), or use `https://mcp.stape.io/mcp?region=eu` if the client takes only a URL and a key.
+
 </details>
 
 ## EU Endpoint Support
 
-If your Stape account is on the EU environment, the server needs to know so it calls the EU API. Take the config for your client from [Installation](#installation) and add **one** of the following:
+If your Stape account is on the EU environment, the server needs to know so it calls the EU API. Each client in [Installation](#installation) ends with the change it needs, which is **one** of these:
 
 | Option | Use it when |
 |---|---|
-| `X-Stape-Region: EU` header | Your client lets you set headers (Claude Desktop, Claude Code, VS Code, Cursor, Antigravity, Copilot CLI, `mcp-remote`) |
-| `?region=eu` on the server URL | Your client only takes a URL and a key (Lovable, ChatGPT) |
+| `X-Stape-Region: EU` header | Your client lets you set headers (Claude Desktop with `mcp-remote`, Claude Code, VS Code, Cursor, Antigravity, Copilot CLI) |
+| `?region=eu` on the server URL, i.e. `https://mcp.stape.io/mcp?region=eu` | Your client takes only a URL and a key (Lovable, Claude Desktop custom connectors) |
 
 If both are present, the header wins. Without either, requests go to the global API and an EU API key is rejected with `401 Unauthorized`.
-
-### Header
-
-Add it next to `Authorization`, in the same format your config already uses:
-
-- **`mcp-remote` configs** (Claude Desktop, other clients): two more entries in `args`:
-  ```json
-  "--header",
-  "X-Stape-Region: EU"
-  ```
-- **JSON `headers` configs** (VS Code, Cursor, Antigravity): one more key:
-  ```json
-  "headers": {
-    "Authorization": "${your_stape_api_key}",
-    "X-Stape-Region": "EU"
-  }
-  ```
-- **CLI** (Claude Code, Copilot CLI): one more flag:
-  ```bash
-  --header "X-Stape-Region: EU"
-  ```
-
-### URL
-
-Use this as the server URL instead of `https://mcp.stape.io/mcp`:
-
-```
-https://mcp.stape.io/mcp?region=eu
-```
 
 ## Available tools
 
