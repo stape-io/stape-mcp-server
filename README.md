@@ -38,7 +38,7 @@ Using the Stape EU environment? Each client below ends with the one change EU ac
 
 **Custom connector (HTTP direct).** If your **Add custom connector** dialog has a **Request headers** section (in beta, [not available to every organization yet](https://claude.com/docs/connectors/custom/add-unlisted#authenticate-with-request-headers)):
 
-1. Go to **Customize → Connectors → Add custom connector**. On Team and Enterprise plans, an Owner adds it under **Organization settings → Connectors** instead, and every member then uses the key the Owner entered.
+1. Go to **Customize → Connectors → Add custom connector**. On Team and Enterprise plans, an Owner adds it under **Organization settings → Connectors** instead, and every member then uses the key the Owner entered: everyone in the organization acts as that one Stape account, including its write and delete tools, so only do this when that's intended.
 2. Set the URL to `https://mcp.stape.io/mcp` and **Authentication** to **No sign-in**.
 3. Under **Request headers**, add `authorization` with your Stape API key as the value, mark it **Required**, and select **Add**.
 
