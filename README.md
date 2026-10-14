@@ -23,7 +23,7 @@ The server wraps the Stape REST API. Full endpoint reference:
 
 ## Installation
 
-The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.io/mcp`. Most clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge that lets stdio-only clients talk to a remote HTTP MCP server; a few clients (VS Code, Cursor, Antigravity) speak HTTP directly.
+The Stape MCP Server is a remote, HTTP-based MCP endpoint at `https://mcp.stape.io/mcp`. Clients that speak HTTP directly (Claude Code, VS Code, Copilot CLI, Cursor, Antigravity, ChatGPT, Lovable) connect to it as is; stdio-only clients reach it through [`mcp-remote`](https://github.com/geelen/mcp-remote#readme), a small bridge to remote HTTP MCP servers.
 
 > A legacy `/sse` endpoint also exists for backward compatibility with older SSE-based MCP clients. It isn't part of any config below — use `/mcp` for new integrations.
 
@@ -169,6 +169,8 @@ Antigravity also speaks HTTP directly, using `serverUrl` instead of `url`. Add t
 1. In ChatGPT, enable Developer mode: Settings → Apps & Connectors → Advanced settings → Developer mode.
 2. Go to Settings → Connectors → Create, and set the server URL to `https://mcp.stape.io/mcp`.
 3. Authenticate with your Stape API key. ChatGPT's connector UI is OAuth-first and support for a raw `Authorization` header varies by rollout — if there's no field for it, use one of the other clients above instead.
+
+EU accounts use `https://mcp.stape.io/mcp?region=eu` as the server URL — see [EU Endpoint Support](#eu-endpoint-support).
 
 </details>
 
