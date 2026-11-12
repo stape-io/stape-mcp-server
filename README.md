@@ -260,6 +260,9 @@ Each tool takes an `action` parameter selecting the operation (`list`, `get`, `c
 Tools that would mix reads with writes are split into a `_read` tool (safe,
 read-only actions) and a `_write` tool (actions that create, change, charge or
 delete), so a client can allow the reads without also allowing the writes.
+Two write tools still include an action that may only check or compute
+something: `stape_container_domains_write` (`validate`) and
+`stape_container_lifecycle` (`generate_custom_loader`).
 On `https://mcp.stape.io/mcp`, every tool has a `title` and sets all four MCP
 annotation hints: `readOnlyHint`, `destructiveHint` (`true` for any write that
 isn't purely additive), `idempotentHint`, and `openWorldHint` (`true` only for
