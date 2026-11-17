@@ -255,28 +255,33 @@ If both are present, the header wins. Without either, requests go to the global 
 
 ## Available tools
 
-Each tool takes an `action` parameter selecting the operation (`list`, `get`, `create`, `update`, `delete`, …). Destructive actions additionally require `confirm: true`.
+Each tool takes an `action` parameter selecting the operation (`list`, `get`, `create`, `update`, `delete`, …). Some destructive actions, such as deletes, additionally require `confirm: true`.
 
-Tools that mix reads with destructive or state-changing actions are split into a
-`_read` tool (safe, read-only actions) and a `_write` tool (create/update/delete
-actions); tools that were already all-read or already carried non-destructive
-writes only are left as a single tool. The exceptions are
-`stape_container_proxy_files` and `stape_container_schedules`: their `update`
-replaces the whole collection (omitted entries are removed);
-`stape_container_power_ups`: its `proxy_files` and `schedule` updates do the
-same; and `stape_container_subscription`: it can transfer a container to a new
-owner or cancel its subscription. All four are annotated
-`destructiveHint: true` and not yet split.
+Tools that would mix reads with writes are split into a `_read` tool (safe,
+read-only actions) and a `_write` tool (actions that create, change, charge or
+delete), so a client can allow the reads without also allowing the writes.
+Two write tools still include an action that may only check or compute
+something: `stape_container_domains_write` (`validate`) and
+`stape_container_lifecycle` (`generate_custom_loader`).
+On `https://mcp.stape.io/mcp`, every tool has a `title` and sets all four MCP
+annotation hints: `readOnlyHint`, `destructiveHint` (`true` for any write that
+isn't purely additive), `idempotentHint`, and `openWorldHint` (`true` only for
+tools whose call makes Stape read public web content or act in one of your
+other accounts: Stape Score scans and their results, the Setup Wizard,
+container connections, and log export; billing, including Paddle payments,
+goes through your Stape account and stays `false`). The retired
+`mcp.stape.ai` host is different: from 2026-12-01 its tools only return a
+notice to move to `mcp.stape.io`, and are all marked read-only.
 
 | Area | Tools |
 | --- | --- |
-| Containers | `stape_container_read`, `stape_container_write`, `stape_container_lifecycle`, `stape_container_domains_read`, `stape_container_domains_write`, `stape_container_schedules`, `stape_container_power_ups`, `stape_container_proxy_files`, `stape_container_connections_read`, `stape_container_connections_write`, `stape_container_resources` |
+| Containers | `stape_container_read`, `stape_container_write`, `stape_container_lifecycle`, `stape_container_domains_read`, `stape_container_domains_write`, `stape_container_schedules_read`, `stape_container_schedules_write`, `stape_container_power_ups_read`, `stape_container_power_ups_write`, `stape_container_proxy_files_read`, `stape_container_proxy_files_write`, `stape_container_connections_read`, `stape_container_connections_write`, `stape_container_resources_read`, `stape_container_resources_write` |
 | Setup Wizard | `stape_setup_wizard_read`, `stape_setup_wizard_write` — run the guided setup of a new sGTM container one step at a time (website scan, business type, platform, destinations and tracking IDs, tagging server URL, consent banner, DNS verification, platform app). Both modes of the app: automatic (the user signs in with Google once in the Stape app, from the link the mode step gives; the tools then create or pick the web and server GTM containers and Stape imports the tags into them, unpublished) and manual (the GTM container templates are downloaded in the Stape app, from the link the template step gives) |
-| Monitoring & logs | `stape_container_monitoring_read`, `stape_container_monitoring_write`, `stape_container_monitoring_logs`, `stape_container_logs_read`, `stape_container_logs_write`, `stape_container_analytics`, `stape_container_statistics` |
-| Billing | `stape_billing`, `stape_consolidated_invoicing_read`, `stape_consolidated_invoicing_write`, `stape_invoices`, `stape_payment_links_read`, `stape_payment_links_write`, `stape_subscriptions`, `stape_container_subscription`, `stape_container_paddle` |
+| Monitoring & logs | `stape_container_monitoring_read`, `stape_container_monitoring_write`, `stape_container_monitoring_logs`, `stape_container_logs_read`, `stape_container_logs_write`, `stape_container_analytics_read`, `stape_container_analytics_write`, `stape_container_statistics` |
+| Billing | `stape_billing_read`, `stape_billing_write`, `stape_consolidated_invoicing_read`, `stape_consolidated_invoicing_write`, `stape_invoices`, `stape_payment_links_read`, `stape_payment_links_write`, `stape_subscriptions`, `stape_container_subscription_read`, `stape_container_subscription_write`, `stape_container_paddle_read`, `stape_container_paddle_write` |
 | Account & access | `stape_account_read`, `stape_account_write`, `stape_users_read`, `stape_users_write`, `stape_user_api_keys_read`, `stape_user_api_keys_write`, `stape_company_read`, `stape_company_write`, `stape_share_access_read`, `stape_share_access_write` |
-| Partners | `stape_partner`, `stape_partner_payouts_read`, `stape_partner_payouts_write` |
-| Stape Score | `stape_score_report` — scan a website's tracking setup with Stape Score (create a scan, fetch results) |
+| Partners | `stape_partner_read`, `stape_partner_write`, `stape_partner_payouts_read`, `stape_partner_payouts_write` |
+| Stape Score | `stape_score_report_read`, `stape_score_report_write` — scan a website's tracking setup with Stape Score (create a scan, fetch results) |
 | Reference data | `stape_container_resource`, `stape_domains_resource`, `stape_gateway_resource`, `stape_logs_resource`, `stape_monitoring_resource`, `stape_billing_resource`, `stape_partner_resource`, `stape_products`, `stape_calculator` |
 
 ## Troubleshooting
